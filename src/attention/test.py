@@ -1,26 +1,14 @@
 import torch
 
-# Parameters
-sequence_length = 100
-d_model = 64
-window_size = 10  # Example window size
 
+from sliding_window_attention import MultiHeadDilatedLocalAttention
 
-tensor = torch.rand(sequence_length, d_model)
-pad_size = window_size - 1
-left_pad = pad_size // 2
-right_pad = pad_size - left_pad
-d=3
-# Pad the sequence
-# We're padding along the sequence dimension (dim 0), hence (left_pad, right_pad)
-padded_tensor = torch.nn.functional.pad(tensor, (0, 0, left_pad, right_pad))
-# Create an index tensor to gather slices
-window_inds = torch.arange(0, window_size * d, d)
-idx = window_inds[None, :] + torch.arange(sequence_length - (window_size - 1) * d)[:, None]
+d_model = 512
+s = MultiHeadDilatedLocalAttention(d_model=d_model,dilation_rate=5, window_size=49, num_heads=4).to("cuda")
+q,k,v = (torch.randn(128, 5000, d_model).to("cuda") for _ in range(3))
+att = torch.nn.MultiheadAttention(num_heads=4, embed_dim=d_model).to("cuda")
 
-print(idx.shape)
-# Slice the tensor using advanced indexing
-sliced_tensor = padded_tensor[idx]
+import utils
 
-# sliced_tensor now has the shape [91, 10, 64]
-print(sliced_tensor.shape)
+utils.track_cuda_memory("custom", att, q,k,v)
+
