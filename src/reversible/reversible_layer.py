@@ -2,7 +2,7 @@ from xformers.components.reversible import ReversibleBlock
 from xformers.components.feedforward import MLP, FusedMLP
 from xformers.components.activations import Activation
 import torch
-
+import torch.nn as  nn
 from src.attention.sliding_window_attention import MultiHeadDilatedLocalAttention
 from src.attention.utils import track_cuda_memory, evaluate_cuda_memory
 d_model = 512
@@ -36,3 +36,11 @@ rev_layer = ReversibleBlock(proj, mlp).to("cuda")
 
 track_cuda_memory("rev", rev_layer, q)
 evaluate_cuda_memory(rev_layer, q)
+
+class ReversibleResidualBlock(nn.Module):
+    def __init__(self, F: nn.Module, G: nn.Module):
+        super().__init__()
+        assert isinstance(F, nn.Module)
+        assert isinstance(G, nn.Module)
+
+
