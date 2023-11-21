@@ -1,8 +1,10 @@
+import copy
+
 import numpy as np
 import torch
 import torch.nn as nn
 from einops import rearrange
-from typing import Optional
+from typing import Optional, Tuple
 import xformers.components
 from xformers.components.attention import (
     maybe_sparsify,
@@ -12,10 +14,53 @@ from xformers.components.attention.attention_patterns import (
     causal_1d_pattern,
     local_1d_pattern
 )
+from xformers.components.feedforward import MLP
 from xformers.components.multi_head_dispatch import MultiHeadDispatch
-
-
+from enum import Enum
 from src.attention import utils
+
+
+class QKVProjectionOption(Enum):
+    INDIVIDUAL = 1
+    QK = 2
+    SAME = 3
+
+
+class AttentionProjector(nn.Module):
+    def __init__(self, d_model: int, projection_option: QKVProjectionOption = QKVProjectionOption.INDIVIDUAL):
+        super().__init__()
+
+        self.projection_option = projection_option
+        if projection_option == QKVProjectionOption.INDIVIDUAL:
+            self.q_proj = MLP(dim_model=d_model, dropout=0., activation=None, hidden_layer_multiplier=1)
+            self.v_proj = MLP(dim_model=d_model, dropout=0., activation=None, hidden_layer_multiplier=1)
+            self.k_proj = MLP(dim_model=d_model, dropout=0., activation=None, hidden_layer_multiplier=1)
+
+        elif projection_option == QKVProjectionOption.QK:
+            self.qk_proj = MLP(dim_model=d_model, dropout=0., activation=None, hidden_layer_multiplier=1)
+            self.v_proj = MLP(dim_model=d_model, dropout=0., activation=None, hidden_layer_multiplier=1)
+
+        elif projection_option == QKVProjectionOption.SAME:
+            self.proj = MLP(dim_model=d_model, dropout=0., activation=None, hidden_layer_multiplier=1)
+
+    def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor]:
+        q,k,v = None, None, None
+        if self.projection_option == QKVProjectionOption.INDIVIDUAL:
+            q = self.q_proj(x)
+            v = self.v_proj(x)
+            k = self.v_proj(x)
+        elif self.projection_option == QKVProjectionOption.QK:
+            q = self.qk_proj(x)
+            v = self.v_proj(x)
+            k = torch.clone(q)
+
+        elif self.projection_option == QKVProjectionOption.SAME:
+            q = self.proj(x)
+            v = torch.clone(q)
+            k = torch.clone(q)
+
+        return q, k, v
+
 
 class LocalAttentionDilation(xformers.components.attention.LocalAttention):
     """
@@ -101,13 +146,15 @@ class LocalAttentionDilation(xformers.components.attention.LocalAttention):
 class MultiHeadDilatedLocalAttention(nn.Module):
     def __init__(self, d_model: int, num_heads: int, window_size: int,
                  global_tokens: Optional[torch.Tensor] = None,
-                 dilation_rate: Optional[int] = None):
+                 dilation_rate: Optional[int] = None,
+                 projection_option: QKVProjectionOption = QKVProjectionOption.INDIVIDUAL):
         super().__init__()
         self.d_model = d_model
         self.num_heads = num_heads
         self.global_indices = global_tokens
         self.dilation_rate = dilation_rate
-        
+
+        self.attention_projector = AttentionProjector(d_model, projection_option)
         local_attention = LocalAttentionDilation(window_size=window_size)
 
         if dilation_rate is not None:
@@ -118,7 +165,8 @@ class MultiHeadDilatedLocalAttention(nn.Module):
 
         self.multihead = MultiHeadDispatch(attention=local_attention, dim_model=d_model//2, num_heads=num_heads)
 
-    def forward(self, q: torch.Tensor, k: torch.Tensor, v: torch.Tensor):
+    def forward(self, x: torch.Tensor):
+        q, k, v = self.attention_projector(x)
         return self.multihead(q,k,v)
 
 
