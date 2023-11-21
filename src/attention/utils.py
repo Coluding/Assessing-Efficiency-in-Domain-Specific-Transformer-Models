@@ -12,7 +12,6 @@ from xformers.components.attention import (
 from xformers.components.attention.attention_patterns import (
     causal_1d_pattern,
     local_1d_pattern,
-    local_1d_pattern_dilated
 )
 from torch.profiler import profile, record_function, ProfilerActivity
 from typing import Union, Set, Tuple, List
