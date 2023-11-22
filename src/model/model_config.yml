@@ -1,0 +1,35 @@
+encoder:
+  num_blocks: 2
+
+attention_blocks:
+  -   model_dim: 256
+      num_heads:  2
+      dilation_rate: 1
+      global_tokens:
+          - 1
+          - 2
+          - 10
+          - 50
+          - 100
+          - 200
+          - 300
+      window_size: 11
+      reversible: True
+      projection_option: 1
+      dropout: 0.0
+
+  -   model_dim: 256
+      num_heads: 2
+      dilation_rate: 1
+      global_tokens:
+          - 1
+          - 2
+          - 10
+          - 50
+          - 100
+          - 200
+          - 300
+      window_size: 10
+      reversible: True
+      projection_option: 1
+      dorpout: 0.0

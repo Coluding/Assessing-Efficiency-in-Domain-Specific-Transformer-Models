@@ -17,7 +17,8 @@ from xformers.components.attention.attention_patterns import (
 from xformers.components.feedforward import MLP
 from xformers.components.multi_head_dispatch import MultiHeadDispatch
 from enum import Enum
-from src.attention import utils
+
+import utils
 
 
 class QKVProjectionOption(Enum):

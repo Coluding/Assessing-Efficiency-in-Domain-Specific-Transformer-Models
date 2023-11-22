@@ -1,20 +1,17 @@
 import torch
 import torch.nn as nn
 import numpy as np
-from typing import List, Optional, Union, Type
+from typing import List, Optional, Type
 from xformers.components.feedforward import  MLP
 from xformers.components.activations import Activation
+import yaml
 
-from src.attention.sliding_window_attention import (
+from src.model.sliding_window_attention import (
     MultiHeadDilatedLocalAttention,
     AttentionProjector,
     QKVProjectionOption
 )
-from src.reversible.reversible_layer import ReversibleResidualBlock
-from src.attention.utils import (
-    track_cuda_memory,
-    evaluate_cuda_memory
-)
+from reversible_layer import ReversibleResidualBlock
 
 
 class ResidualBlock(nn.Module):
@@ -66,12 +63,39 @@ class AttentionBlock(nn.Module):
         return self.block(x)
 
 
+def build_model_from_config(config_path: str) -> AttentionBlock:
+    projection_mapper = {
+        0: QKVProjectionOption.INDIVIDUAL,
+        1: QKVProjectionOption.QK,
+        2: QKVProjectionOption.SAME
+    }
+    with open(config_path) as f:
+        config = yaml.safe_load(f)
+
+    if config["encoder"]["num_blocks"] != len(config["attention_blocks"]):
+        raise ValueError("num_block and number of blocks specified in config must match!")
+
+    blocks = []
+
+    for context in config["attention_blocks"]:
+        block = AttentionBlock(context["model_dim"], context["num_heads"],
+                               context["window_size"], context["dilation_rate"],
+                               context["global_tokens"], context["dropout"],
+                               context["reversible"], projection_mapper[context["projection_option"]])
+        blocks.append(block)
+
+    model = nn.Sequential(
+        *blocks
+    )
+
+    return model
 
 def main():
     b, n, d = 1, 64, 128
-    x = torch.randn(b, n, d).to("cuda")
-    att = AttentionBlock(d, 2, 5, 1, [1, 10, 20]).to("cuda")
-    print(att(x).shape)
+    #x = torch.randn(b, n, d).to("cuda")
+    #att = AttentionBlock(d, 2, 5, 1, [1, 10, 20]).to("cuda")
+    att = build_model_from_config("model_config.yml")
+    #print(att(x).shape)
 
 
 if __name__ == "__main__":
