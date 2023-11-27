@@ -1,6 +1,6 @@
 import warnings
 
-from xformers.components.reversible import ReversibleBlock
+from xformers.components.reversible import ReversibleBlock, ReversibleSequence
 from xformers.components.feedforward import MLP
 import torch
 import torch.nn as nn
@@ -9,6 +9,7 @@ from typing import Type
 from src.model.sliding_window_attention import MultiHeadDilatedLocalAttention
 from utils import track_cuda_memory, evaluate_cuda_memory
 
+
 class ReversibleWrapper(ReversibleBlock):
     """
         A wrapper class for the ReversibleBlock that incorporates layer normalization.
@@ -16,12 +17,15 @@ class ReversibleWrapper(ReversibleBlock):
         This class extends the functionality of ReversibleBlock by optionally adding
         a layer normalization step in the forward pass. This can help stabilize
         the learning process in deep neural networks.
+    """
+    def __init__(self, f: nn.Module, g: nn.Module, split_dim: int = -1):
+        """
+        Initialization of ReversibleWrapper.
 
         :param f: A neural network module to be used as the 'f' function in the reversible block.
         :param g: A neural network module to be used as the 'g' function in the reversible block.
         :param split_dim: The dimension along which the input tensor should be split. Default is -1.
         """
-    def __init__(self, f: nn.Module, g: nn.Module, split_dim: int = -1):
         super().__init__(f, g, split_dim)
         self.layer_norm = nn.Identity()
 
@@ -61,63 +65,72 @@ class ReversibleWrapper(ReversibleBlock):
         return torch.cat([y1, y2], dim=self.split_dim)
 
 
+class ReversibleSequenceWrapper(ReversibleSequence):
+    """
+    A wrapper for a sequence of reversible blocks.
+
+    This class manages a sequence of reversible blocks, facilitating the construction of complex reversible architectures.
+    It optionally supports layer normalization for each block in the sequence.
+
+    """
+    def __init__(self, blocks: nn.ModuleList, model_dim: int = None, layer_norm: bool = False):
+        """
+        Initialization of ReversibleSequenceWrapper.
+
+        :param blocks:  A list of tuples, where each tuple contains two nn.Module instances (f, g) for each reversible block.
+        :param model_dim: The dimension of the model for layer normalization. Required if layer_norm is True.
+        :param layer_norm: Flag to indicate whether layer normalization should be applied to each block.
+        """
+        super().__init__(blocks)
+        if model_dim is None and layer_norm:
+            raise ValueError("When layer norm should be applied, then provide also model_dim argument")
+        self.blocks = nn.ModuleList([ReversibleWrapper(f, g) for f, g in blocks])
+
+        if layer_norm:
+            for block in self.blocks:
+                block.apply_layer_norm(model_dim)
+
+
+def reversible_layer_constructor(f: nn.Module, g: nn.Module, model_dim: int = None, layer_norm: bool = False) -> ReversibleSequenceWrapper:
+    """
+    Constructs a reversible layer sequence wrapper.
+
+    This function creates a `ReversibleSequenceWrapper` given the functions `f` and `g`, along with model dimensions
+    and a layer normalization flag. It is a utility for easy construction of a reversible sequence with one block.
+
+    :param f: The first function (module) to be used in the reversible block.
+    :param g: The second function (module) to be used in the reversible block.
+    :param model_dim: The dimension of the model for layer normalization. Required if layer_norm is True.
+    :param layer_norm: Flag to indicate whether layer normalization should be applied..
+    :return: An instance of ReversibleSequenceWrapper containing the constructed reversible block.
+    """
+    assert isinstance(f, nn.Module)
+    assert isinstance(g, nn.Module)
+
+    return ReversibleSequenceWrapper(torch.nn.ModuleList([torch.nn.Sequential(f, g)]), model_dim, layer_norm)
+
+
 class ReversibleResidualBlock(nn.Module):
-    def __init__(self, f: Type[nn.Module], g: MLP, dim_model: int):
+    def __init__(self, f: Type[nn.Module], g: MLP, dim_model: int, layer_norm: bool = False):
         """
         Reversible Layer which avoids storing activations. Activations are recomputed during backward pass.
         Refer to equations (31) to (43) and algorithm 1 for an understanding of the process.
-        :param F: Function F which should ideally be some kind of attention.
-        :param G: Function F which should ideally be a feedforward layer.
+        :param f: Function F which should ideally be some kind of attention.
+        :param g: Function F which should ideally be a feedforward layer.
+        :param layer_norm: Whether to apply layer norm after attention and feedforward layer
         """
         super().__init__()
         assert isinstance(f, nn.Module)
         assert isinstance(g, nn.Module)
 
-        self.rev_layer = ReversibleWrapper(f, g)
-        self.rev_layer.apply_layer_norm(dim_model)
+        self.rev_layer = reversible_layer_constructor(f, g, dim_model, layer_norm)
+    #    self.rev_layer.apply_layer_norm(dim_model)
 
     def forward(self, x: torch.Tensor):
         return self.rev_layer(x)
 
 
 
-"""
-d_model = 512
-device = "cuda" if torch.cuda.is_available() else "cpu"
-s = MultiHeadDilatedLocalAttention(d_model=d_model, dilation_rate=5, window_size=49, num_heads=4).to(device)
-q,k,v = (torch.randn(64, 1000, d_model).to(device) for _ in range(3))
-att = torch.nn.MultiheadAttention(num_heads=4, embed_dim=d_model).to(device)
-
-activation = Activation("relu")
-print(activation)
-
-class Projector(torch.nn.Module):
-    def __init__(self):
-        super().__init__()
-
-        self.q_proj = torch.nn.Linear(d_model//2, d_model//2)
-        self.w_proj = torch.nn.Linear(d_model//2, d_model//2)
-        self.k_proj = torch.nn.Linear(d_model//2, d_model//2)
-        self.s = MultiHeadDilatedLocalAttention(d_model=d_model, dilation_rate=5, window_size=49, num_heads=4).to(device)
-
-    def forward(self, emb):
-        q = self.q_proj(emb)
-        k = self.q_proj(emb)
-        v = self.q_proj(emb)
-
-        out = self.s(q,k,v)
-
-        return out
-
-proj = Projector().to(device)
-mlp = MLP(dim_model=d_model//2, dropout=0.1, activation=activation, hidden_layer_multiplier=2).to(device)
-rev_layer = ReversibleBlock(proj, mlp).to(device)
-
-#track_cuda_memory("rev", rev_layer, q)
-#evaluate_cuda_memory(rev_layer, q)
-
-rev_layer(q)
-"""
 
 
 
