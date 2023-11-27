@@ -68,6 +68,7 @@ class AttentionProjector(nn.Module):
 
 
 class DilatedAttention(nn.Module):
+    # Based on this repository https://github.com/fkodom/dilated-attention-pytorch from fkodom
     """
     Implements a Dilated Attention mechanism in a neural network.
 

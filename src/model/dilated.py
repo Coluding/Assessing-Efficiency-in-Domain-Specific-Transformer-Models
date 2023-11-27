@@ -5,6 +5,8 @@ import xformers.ops as xops
 from einops import rearrange
 from torch import Tensor, nn
 
+# Based on this repository https://github.com/fkodom/dilated-attention-pytorch ffom fkodom
+
 
 class DilatedAttention(nn.Module):
     """Implement dilated, scaled dot product attention with softmax.
