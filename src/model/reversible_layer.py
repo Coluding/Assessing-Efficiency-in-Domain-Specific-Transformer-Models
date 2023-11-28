@@ -7,7 +7,7 @@ import torch.nn as nn
 from typing import Type
 
 from src.model.sliding_window_attention import MultiHeadDilatedLocalAttention
-from utils import track_cuda_memory, evaluate_cuda_memory
+from src.model.utils import track_cuda_memory, evaluate_cuda_memory
 
 
 class ReversibleWrapper(ReversibleBlock):

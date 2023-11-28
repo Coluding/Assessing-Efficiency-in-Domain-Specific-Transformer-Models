@@ -12,8 +12,8 @@ from src.model.sliding_window_attention import (
     AttentionProjector,
     QKVProjectionOption
 )
-from reversible_layer import ReversibleResidualBlock, reversible_layer_constructor, ReversibleSequenceWrapper
-from utils import track_cuda_memory, evaluate_cuda_memory
+from src.model.reversible_layer import ReversibleResidualBlock, reversible_layer_constructor, ReversibleSequenceWrapper
+from src.model.utils import track_cuda_memory, evaluate_cuda_memory
 
 class ResidualBlock(nn.Module):
     def __init__(self, f: Type[nn.Module]):
@@ -25,19 +25,38 @@ class ResidualBlock(nn.Module):
 
 
 class AttentionBlock(nn.Module):
+    """
+     A customizable attention block with optional reversible layers.
+
+    This class defines an attention block which can be configured to use either standard or reversible layers.
+    It includes a multi-head dilated attention mechanism and a feedforward network. The reversible configuration
+    is particularly memory-efficient for training large models.
+    """
     def __init__(self, d_model: int, num_heads: int,  dilation_rates: Sequence[int],
                  segment_lengths: Sequence[int], dropout: float = 0., reversible: bool = True,
                  projection_option: QKVProjectionOption = QKVProjectionOption.INDIVIDUAL):
+        """
+        :param d_model: The dimensionality of the input and output features of the block.
+        :param num_heads: The number of heads in the multi-head attention mechanism.
+        :param dilation_rates: Dilation rates for each attention head.
+        :param segment_lengths:  Segment lengths for attention calculation in each head.
+        :param dropout: Dropout rate for the feedforward network. Defaults to 0.
+        :param reversible: Flag to use reversible layers. Defaults to True.
+        :param projection_option: Option for how queries, keys, and values are projected in the attention mechanism.
+        Defaults to QKVProjectionOption.INDIVIDUAL.
+        """
         super().__init__()
-        # assert wether model dimension is a power of 2
+        # Ensure that d_model is a power of 2 for compatibility with certain optimizations
         if np.log2(d_model) != int(np.log2(d_model)):
             raise ValueError("d_model has to be a power of 2")
 
+        # Prepare for reversible configuration by adjusting d_model if necessary
         self.reversible = False
         if reversible:
             d_model //= 2
             self.reversible = True
 
+        # Initialize the attention mechanism
         attention_part = MultiheadDilatedAttention(
             d_model=d_model, num_heads=num_heads,
             dilation_rates= dilation_rates,
@@ -45,8 +64,10 @@ class AttentionBlock(nn.Module):
             projection_option=projection_option
         )
 
+        # Initialize the feedforward part
         feedforward_part = MLP(dim_model=d_model, dropout=dropout, activation=Activation.ReLU, hidden_layer_multiplier=2)
 
+        # Construct the block, either reversible or standard
         if reversible:
             self.block = ReversibleResidualBlock(attention_part, feedforward_part, d_model, layer_norm=True)
 
@@ -64,9 +85,10 @@ class AttentionBlock(nn.Module):
             )
 
     def forward(self, x: torch.Tensor):
+        # Ensure gradient computation for reversible layers
         if self.reversible and not x.requires_grad:
             x.requires_grad = True
-
+        # Apply the block to the input tensor
         return self.block(x)
 
 

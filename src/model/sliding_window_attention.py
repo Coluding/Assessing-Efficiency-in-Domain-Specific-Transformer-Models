@@ -1,8 +1,4 @@
-import copy
-
-from torch import Tensor
-
-from utils import slice_tensor_in_windows, remove_global_attention_token_create_global_attention_tensor
+from src.model.utils import slice_tensor_in_windows, remove_global_attention_token_create_global_attention_tensor
 import numpy as np
 import torch
 import torch.nn as nn
@@ -22,7 +18,7 @@ from xformers.components.feedforward import MLP
 from xformers.components.multi_head_dispatch import MultiHeadDispatch
 from enum import Enum
 
-import utils
+from src.model import utils
 
 
 class QKVProjectionOption(Enum):

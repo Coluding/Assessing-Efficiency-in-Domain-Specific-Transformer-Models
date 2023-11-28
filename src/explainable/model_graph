@@ -1,0 +1,25 @@
+digraph {
+	graph [size="12,12"]
+	node [align=left fontname=monospace fontsize=10 height=0.2 ranksep=0.1 shape=box style=filled]
+	139696765698192 [label="
+ ()" fillcolor=darkolivegreen1]
+	139696242189616 -> 139696242206624 [dir=none]
+	139696242206624 [label="self
+ (128, 3072, 512)" fillcolor=orange]
+	139696242189616 [label="MeanBackward0
+--------------------------------
+self          :   [saved tensor]
+self_sym_sizes: (128, 3072, 512)"]
+	139696356013728 -> 139696242189616
+	139696356013728 [label=_ReversibleFunctionBackward]
+	139696356013248 -> 139696356013728
+	139696356013248 [label=_ReversibleFunctionBackward]
+	139696242190336 -> 139696356013248
+	139696242190336 [label=ToCopyBackward0]
+	139696242190384 -> 139696242190336
+	139700030472496 [label="
+ (128, 3072, 512)" fillcolor=lightblue]
+	139700030472496 -> 139696242190384
+	139696242190384 [label=AccumulateGrad]
+	139696242189616 -> 139696765698192
+}
