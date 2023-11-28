@@ -1,4 +1,4 @@
-## Bachelor thesis Lukas Bierling: Reversible dilated attention transformer to understand financial text data
+## Bachelor thesis Lukas Bierling: ReversibleDilatedBERT
 
 ### 1. Introduction
 This repository contains the code for a reversible dilated BERT like model to understand financial text data.
