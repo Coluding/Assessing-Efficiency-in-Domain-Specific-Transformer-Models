@@ -1,4 +1,4 @@
-## Bachelor thesis Lukas Bierling: ReversibleDilatedBERT
+## Bachelor thesis Lukas Bierling: ReversibleDilatedFinBERT
 
 ### 1. Introduction
 This repository contains the code for a reversible dilated BERT like model to understand financial text data.
