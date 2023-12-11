@@ -207,3 +207,5 @@ def remove_global_attention_token_create_global_attention_tensor(embedding: torc
         receiver.local_token_indices = torch.tensor(list(channels_to_keep))
 
     return global_attention_tensor, reduced_sliced_embedding
+
+

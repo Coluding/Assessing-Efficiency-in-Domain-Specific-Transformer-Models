@@ -38,7 +38,7 @@ class AttentionProjector(nn.Module):
             self.k_proj = nn.Linear(d_model,d_model)
 
         elif projection_option == QKVProjectionOption.QK:
-            self.qk_proj =nn.Linear(d_model,d_model)
+            self.qk_proj = nn.Linear(d_model,d_model)
             self.v_proj = nn.Linear(d_model,d_model)
 
         elif projection_option == QKVProjectionOption.SAME:
