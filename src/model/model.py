@@ -52,17 +52,17 @@ class ReversibleLongBert(nn.Module):
 
 
 def main():
-    b, n, d = 256, 2048, 512
+    b, n, d = 128, 3600, 512
     #x = torch.randn(b, n, d, requires_grad=True).to("cuda")
     h = 8
     x = torch.randint(0, 10000, (b, n)).to("cuda")
     segment_ids = torch.randint(0, 3, (b, n)).to("cuda")
     blocks = 2
     dilation_rates = [[1, 3, 5]] * blocks
-    segment_lengths = [[128, 512, 1024]] * blocks
+    segment_lengths = [[300, 600, 1200]] * blocks
     config: ReversibleLongBertConfig = ReversibleLongBertConfig(blocks, h, d, dilation_rates=dilation_rates,
                                                                 segment_lengths=segment_lengths,
-                                                                reversible=True, use_pretrained_embeddings=False,
+                                                                reversible=False, use_pretrained_embeddings=False,
                                                                 vocab_size=10000)
     att = ReversibleLongBert(config).to("cuda")
     att(x, segment_ids).sum().backward()
