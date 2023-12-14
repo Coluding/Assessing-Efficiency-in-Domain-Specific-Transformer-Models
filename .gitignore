@@ -1,3 +1,5 @@
 .idea
 ./__pycache__/
 ./src/model/__pycache__
+./src/data/__pycache__/
+./src/data/app.log
