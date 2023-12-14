@@ -1,2 +1,10 @@
 data:
-  k_reports_path: "/home/lubi/Documents/Projects/BA/data/k_reports"
+  path: '/home/lubi/Desktop/K_reports_full.sqlite'
+  table_name: 'K_reports_full'
+  limited_loader: 10
+
+debug: True
+tokenizer: "roberta-base"
+context_length: 2048
+context_stride: 512
+padding_value: 1

@@ -1,0 +1,3 @@
+2023-12-13 20:11:35,385 - DEBUG - Starting new HTTPS connection (1): huggingface.co:443
+2023-12-13 20:11:35,831 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/tokenizer_config.json HTTP/1.1" 404 0
+2023-12-13 20:11:36,166 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/vocab.json HTTP/1.1" 200 0
