@@ -15,3 +15,16 @@ def timing_decorator(active=True):
                 return func(*args, **kwargs)
         return wrapper
     return decorator
+
+
+def exception_decorator(exception_type=KeyError, message=""):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except exception_type as e:
+                raise exception_type(f"{func.__name__} raised {e} with message {message}")
+                return None
+        return wrapper
+    return decorator

@@ -1,10 +1,13 @@
 data:
   path: '/home/lubi/Desktop/K_reports_full.sqlite'
   table_name: 'K_reports_full'
-  limited_loader: 10
+  limit: 10
+  offset: 0
 
 debug: True
 tokenizer: "roberta-base"
+masked_probability: 0.15
 context_length: 2048
 context_stride: 512
 padding_value: 1
+dynamic_masking: False
