@@ -1,5 +1,5 @@
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 from logging.config import dictConfig
 import logging
 import transformers
@@ -11,6 +11,11 @@ from typing import List, Dict
 from src.data.preprocessing import Preprocessing, Database
 from src.utils.utils import timing_decorator, exception_decorator
 
+logging.basicConfig(level=logging.DEBUG,
+                            format='%(asctime)s - %(levelname)s - %(message)s',
+                            filename='app.log',
+                            filemode='w')
+
 
 class FinDataset(Dataset):
     __DEBUG__ = False
@@ -21,10 +26,6 @@ class FinDataset(Dataset):
 
         with open(config_file_path, "r") as file:
             self.config = yaml.safe_load(file)
-        logging.basicConfig(level=logging.DEBUG,
-                            format='%(asctime)s - %(levelname)s - %(message)s',
-                            filename='app.log',
-                            filemode='w')
 
         self.__class__.__DEBUG__ = self.config["debug"]
         self.database = database
@@ -35,6 +36,7 @@ class FinDataset(Dataset):
         self.preprocessor = preprocessor
         self.preprocessor.set_tokenizer(self.tokenizer)
         self.dynamic_masking = self.config["dynamic_masking"]
+        self.lazy_loading = self.config["lazy_loading"]
 
         self.data: List[str] = None
         self.tokenized_data: Dict[torch.Tensor] = None
@@ -43,16 +45,20 @@ class FinDataset(Dataset):
         self.synonym_map: Dict[str, List[str]] = None
         self.token_to_vocab: Dict[str, int] = None
 
-        self.setup_data()
-        self.setup_tokenized_and_chunked_data()
-
         self.seeds = [i for i in range(self.__len__())]
 
     def load_data(self):
-        return [x[0] for x in self.database.read_all_rows()]
+        return [x[0] for x in self.database.read_all_rows() if x[0] is not None]
 
     def load_data_limited(self, limit: int, offset: int = 0):
         return [x[0] for x in self.database.read_limited_rows(limit, offset)]
+
+    def load_chunked_data(self, limit: int = 0, offset: int = 0):
+        if self.data is not None:
+            raise ValueError("This instance of the dataset is not set up for lazy loading. "
+                             "Please set lazy_loading to True in the config file.")
+        return [x[2] for x in self.database.read_chunked_rows(limit, offset)]
+
 
     def setup_data(self):
         """
@@ -80,16 +86,18 @@ class FinDataset(Dataset):
         :return: None
         """
         self.tokenized_data = self.preprocessor.tokenize_and_pad_list_of_reports(self.data)
-        self.token_to_vocab = {v: k for k, v in self.tokenizer.get_vocab().items()}
         self.chunked_data = self.preprocessor.chunk_tokenized_reports(self.tokenized_data)
+
 
     def mask_sequence(self, sequence: torch.Tensor, seed: int = None):
         """
-        Masks a sequence with a given probability.
+        Masks a sequence with a given probability while preserving padding structure.
         :param sequence: Sequence to be masked.
         :param seed: Seed for the random number generator.
         :return: Masked sequence.
         """
+
+        #TODO: anzahl mask tokens stimmt nicht mit länge labels überein
         padding_index: int = (sequence == 1).sum().item()
         if padding_index == 0:
             possible_masked_words = sequence
@@ -100,7 +108,8 @@ class FinDataset(Dataset):
         if not self.dynamic_masking:
             np.random.seed(seed)
         random_indices = np.random.choice(np.arange(1, length_of_possible_masked_words),
-                                          int(length_of_possible_masked_words * self.masked_probability))
+                                          int(length_of_possible_masked_words * self.masked_probability),
+                                          replace=False)
 
         labels = sequence[random_indices]
         possible_masked_words[random_indices] = self.tokenizer.mask_token_id
@@ -111,15 +120,34 @@ class FinDataset(Dataset):
         return masked_sequence, labels
 
     def __len__(self):
-        return len(self.chunked_data)
-
-    @timing_decorator(active=True if __DEBUG__ else False)
-    def __getitem__(self, index):
-        report = self.chunked_data[index]
-        if self.dynamic_masking:
-            sequence, labels = self.mask_sequence(report, self.seeds[index])
+        if self.data is None:
+            return self.database.chunked_len()
         else:
-            sequence, labels = self.mask_sequence(report)
+            return self.database.original_len()
+
+    def create_token_to_vocab(self):
+        self.token_to_vocab = {v: k for k, v in self.tokenizer.get_vocab().items()}
+
+    def __getitem__(self, index):
+        if self.lazy_loading:
+            report = self.load_chunked_data(limit=1, offset=index)[0]
+            tokenized_report: torch.Tensor = self.preprocessor.tokenize_and_pad_max_length(report)[0]
+
+        else:
+            if self.data is None:
+                raise ValueError("Data has not been set up yet. Please call setup_data() first.")
+            if self.tokenized_data is None:
+                raise ValueError("Tokenized data has not been set up yet. "
+                                 "Please call setup_tokenized_and_chunked_data() first.")
+            if self.chunked_data is None:
+                raise ValueError("Chunked data has not been set up yet. "
+                                 "Please call setup_tokenized_and_chunked_data() first.")
+            tokenized_report = self.chunked_data[index]
+
+        if self.dynamic_masking:
+            sequence, labels = self.mask_sequence(tokenized_report)
+        else:
+            sequence, labels = self.mask_sequence(tokenized_report, self.seeds[index])
 
         return sequence, labels
 
@@ -128,7 +156,7 @@ def main():
     database = Database("../config.yml")
     preprocessor = Preprocessing("../config.yml", debug=True)
     dataset = FinDataset("../config.yml", database, preprocessor)
-    dataset.mask_sequence(dataset.chunked_data[0])
+#    dataset.mask_sequence(dataset[0])
     print(dataset[0][0].shape)
 
 

@@ -1,5 +1,7 @@
-2023-12-15 19:19:07,035 - DEBUG - Starting new HTTPS connection (1): huggingface.co:443
-2023-12-15 19:19:07,437 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/tokenizer_config.json HTTP/1.1" 404 0
-2023-12-15 19:19:07,758 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/config.json HTTP/1.1" 200 0
-2023-12-15 19:19:07,907 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/tokenizer_config.json HTTP/1.1" 404 0
-2023-12-15 19:19:08,030 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/vocab.json HTTP/1.1" 200 0
+2023-12-20 16:38:14,671 - DEBUG - Starting new HTTPS connection (1): huggingface.co:443
+2023-12-20 16:38:15,066 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/tokenizer_config.json HTTP/1.1" 404 0
+2023-12-20 16:38:15,384 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/config.json HTTP/1.1" 200 0
+2023-12-20 16:38:15,730 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/tokenizer_config.json HTTP/1.1" 404 0
+2023-12-20 16:38:15,854 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/vocab.json HTTP/1.1" 200 0
+2023-12-20 16:38:15,961 - INFO - Reading chunked rows from database.
+2023-12-20 16:38:15,961 - INFO - Finished reading chunked rows from database.

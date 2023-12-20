@@ -18,7 +18,7 @@ class ReversibleLongBertConfig:
     dropout: float = 0.
     reversible: bool = True
     projection_option: QKVProjectionOption = QKVProjectionOption.INDIVIDUAL
-    vocab_size: int = 10000
+    vocab_size: int = 50000
     use_pretrained_embeddings: bool = False
 
 
@@ -43,26 +43,28 @@ class ReversibleLongBert(nn.Module):
 
         self.attention_blocks: nn.Sequential = nn.Sequential(*block_intermediate)
 
+        self.prediction_head = nn.Linear(config.d_model, config.vocab_size)
+
     def inject_pretrained_embeddings(self, pretrained_embeddings: torch.Tensor):
         self.embedding.inject_pretrained_embeddings(pretrained_embeddings)
 
     def forward(self, x, segment_ids):
         x = self.embedding(x, segment_ids)
-        return self.attention_blocks(x)
-
+        x = self.attention_blocks(x)
+        return self.prediction_head(x)
 
 def main():
-    b, n, d = 128, 3600, 512
+    b, n, d = 128, 1500, 512
     #x = torch.randn(b, n, d, requires_grad=True).to("cuda")
     h = 8
     x = torch.randint(0, 10000, (b, n)).to("cuda")
     segment_ids = torch.randint(0, 3, (b, n)).to("cuda")
     blocks = 2
     dilation_rates = [[1, 3, 5]] * blocks
-    segment_lengths = [[300, 600, 1200]] * blocks
+    segment_lengths = [[250, 500, 1500]] * blocks
     config: ReversibleLongBertConfig = ReversibleLongBertConfig(blocks, h, d, dilation_rates=dilation_rates,
                                                                 segment_lengths=segment_lengths,
-                                                                reversible=False, use_pretrained_embeddings=False,
+                                                                reversible=True, use_pretrained_embeddings=False,
                                                                 vocab_size=10000)
     att = ReversibleLongBert(config).to("cuda")
     att(x, segment_ids).sum().backward()

@@ -1,13 +1,16 @@
 data:
   path: '/home/lubi/Desktop/K_reports_full.sqlite'
   table_name: 'K_reports_full'
-  limit: 10
+  chunk_table_name: "K_reports_full_sliced"
+  limit: 0
   offset: 0
 
+
+lazy_loading: True
 debug: True
 tokenizer: "roberta-base"
 masked_probability: 0.15
-context_length: 2048
+context_length: 1600
 context_stride: 512
 padding_value: 1
 dynamic_masking: False
