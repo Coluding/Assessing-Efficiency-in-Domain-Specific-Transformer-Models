@@ -1,5 +1,6 @@
 import time
 import functools
+import yaml
 
 def timing_decorator(active=True):
     def decorator(func):
@@ -39,3 +40,10 @@ def exception_decorator(exception_type=KeyError, message=""):
     return decorator
 
 
+class YamlConfigLoader:
+    def __init__(self, config_file_path: str) -> None:
+        with open(config_file_path, "r") as file:
+            self.config = yaml.safe_load(file)
+
+        for key, value in self.config.items():
+            setattr(self, key, value)

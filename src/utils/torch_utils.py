@@ -1,3 +1,5 @@
+import torch
+
 def get_default_device():
     """
     Pick GPU if its available

@@ -1,11 +1,20 @@
-2023-12-20 16:38:17,747 - DEBUG - Starting new HTTPS connection (1): huggingface.co:443
-2023-12-20 16:38:17,938 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/tokenizer_config.json HTTP/1.1" 404 0
-2023-12-20 16:38:18,059 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/config.json HTTP/1.1" 200 0
-2023-12-20 16:38:18,425 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/tokenizer_config.json HTTP/1.1" 404 0
-2023-12-20 16:38:18,546 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/vocab.json HTTP/1.1" 200 0
-2023-12-20 16:38:18,659 - INFO - Reading chunked rows from database.
-2023-12-20 16:38:18,660 - INFO - Finished reading chunked rows from database.
-2023-12-20 16:38:19,628 - INFO - Reading chunked rows from database.
-2023-12-20 16:38:19,628 - INFO - Finished reading chunked rows from database.
-2023-12-20 16:38:19,634 - INFO - Reading chunked rows from database.
-2023-12-20 16:38:19,634 - INFO - Finished reading chunked rows from database.
+2023-12-22 17:33:42,502 - DEBUG - Starting new HTTPS connection (1): huggingface.co:443
+2023-12-22 17:33:42,730 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/tokenizer_config.json HTTP/1.1" 404 0
+2023-12-22 17:33:42,849 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/config.json HTTP/1.1" 200 0
+2023-12-22 17:33:43,004 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/tokenizer_config.json HTTP/1.1" 404 0
+2023-12-22 17:33:43,126 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/vocab.json HTTP/1.1" 200 0
+2023-12-22 17:34:10,971 - INFO - Reading chunked rows from database.
+2023-12-22 17:34:15,828 - INFO - Finished reading chunked rows from database.
+2023-12-22 17:34:15,838 - INFO - Reading chunked rows from database.
+2023-12-22 17:34:22,266 - INFO - Finished reading chunked rows from database.
+2023-12-22 17:34:22,274 - INFO - Reading chunked rows from database.
+2023-12-22 17:34:26,605 - INFO - Finished reading chunked rows from database.
+2023-12-22 17:34:26,615 - INFO - Reading chunked rows from database.
+2023-12-22 17:34:30,075 - INFO - Finished reading chunked rows from database.
+2023-12-22 17:34:30,085 - INFO - Reading chunked rows from database.
+2023-12-22 17:34:30,566 - INFO - Finished reading chunked rows from database.
+2023-12-22 17:34:30,569 - INFO - Reading chunked rows from database.
+2023-12-22 17:34:34,371 - INFO - Finished reading chunked rows from database.
+2023-12-22 17:34:34,378 - INFO - Reading chunked rows from database.
+2023-12-22 17:34:35,026 - INFO - Finished reading chunked rows from database.
+2023-12-22 17:34:35,036 - INFO - Reading chunked rows from database.

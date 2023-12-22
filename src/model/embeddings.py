@@ -60,7 +60,7 @@ class ReversibleLongFinBertEmbedding(nn.Module):
         self.token_embedding = nn.Embedding.from_pretrained(pretrained_embeddings)
         self.injected = True
 
-    def forward(self, sequence: torch.Tensor, segment_ids: torch.Tensor) -> torch.Tensor:
+    def forward(self, sequence: torch.Tensor, segment_ids: torch.Tensor = None) -> torch.Tensor:
         """
         Computes the embeddings for a given sequence and segment IDs.
 
@@ -71,6 +71,9 @@ class ReversibleLongFinBertEmbedding(nn.Module):
         if self.use_pretrained_embeddings and not self.injected:
             raise ValueError("Pretrained embeddings have not been injected yet. "
                              "Call inject_pretrained_embeddings() first.")
+
+        if segment_ids is None:
+            segment_ids = torch.zeros_like(sequence)
 
         return self.dropout(
             self.positional_embedding(self.token_embedding(sequence)) + self.segment_embedding(segment_ids)

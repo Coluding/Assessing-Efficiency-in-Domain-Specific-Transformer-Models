@@ -4,6 +4,7 @@ from nltk import sent_tokenize, word_tokenize
 from transformers import AutoTokenizer
 import torch
 import yaml
+from tqdm import tqdm
 from time import time
 
 from src.utils.utils import timing_decorator, remove_none_from_list_decorator
@@ -195,7 +196,7 @@ class Database:
         """
 
         print("Writing split reports to database.")
-        for report in reports:
+        for report in tqdm(reports):
             if report[1] is not None:
                 self._split_original_report_into_contexts_and_write_to_db(report[1], context_length, report[0])
 
@@ -315,7 +316,7 @@ def main():
     db2 = Database("../config.yml")
     rows = db.read_all_rows()
     db.create_chunked_table()
-    db2.split_original_reports_into_contexts_and_write_to_db(rows, 1000)
+    db2.split_original_reports_into_contexts_and_write_to_db(rows, 1300)
 
 
 if __name__ == "__main__":

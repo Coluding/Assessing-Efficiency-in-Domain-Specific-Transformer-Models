@@ -21,22 +21,22 @@ class FinDataset(Dataset):
     __DEBUG__ = False
 
     @exception_decorator(exception_type=KeyError, message="Check if all fields are listed in the config file.")
-    def __init__(self, config_file_path: str, database: Database,
-                 preprocessor: Preprocessing):
+    def __init__(self, config_file_path: str):
 
         with open(config_file_path, "r") as file:
             self.config = yaml.safe_load(file)
 
         self.__class__.__DEBUG__ = self.config["debug"]
-        self.database = database
+        self.database = Database(config_file_path)
         self.logger = logging
         self.database.inject_loggers(self.logger)
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(self.config["tokenizer"])
         self.masked_probability = self.config["masked_probability"]
-        self.preprocessor = preprocessor
+        self.preprocessor = Preprocessing(config_file_path)
         self.preprocessor.set_tokenizer(self.tokenizer)
         self.dynamic_masking = self.config["dynamic_masking"]
         self.lazy_loading = self.config["lazy_loading"]
+        self.mask_token_id = self.tokenizer.mask_token_id
 
         self.data: List[str] = None
         self.tokenized_data: Dict[torch.Tensor] = None
@@ -88,6 +88,15 @@ class FinDataset(Dataset):
         self.tokenized_data = self.preprocessor.tokenize_and_pad_list_of_reports(self.data)
         self.chunked_data = self.preprocessor.chunk_tokenized_reports(self.tokenized_data)
 
+    def map_token_sequence_to_vocab(self, tokens: torch.Tensor):
+        """
+        Maps a sequence of tokens to the vocabulary.
+        :param tokens: Sequence of tokens.
+        :return: Sequence of tokens mapped to the vocabulary.
+        """
+        if self.token_to_vocab is None:
+            self.create_token_to_vocab()
+        return [self.token_to_vocab[token.item()] for token in tokens]
 
     def mask_sequence(self, sequence: torch.Tensor, seed: int = None):
         """
@@ -149,13 +158,11 @@ class FinDataset(Dataset):
         else:
             sequence, labels = self.mask_sequence(tokenized_report, self.seeds[index])
 
-        return sequence, labels
+        return sequence, tokenized_report
 
 
 def main():
-    database = Database("../config.yml")
-    preprocessor = Preprocessing("../config.yml", debug=True)
-    dataset = FinDataset("../config.yml", database, preprocessor)
+    dataset = FinDataset("../config.yml")
 #    dataset.mask_sequence(dataset[0])
     print(dataset[0][0].shape)
 

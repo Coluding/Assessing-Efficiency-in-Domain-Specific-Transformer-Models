@@ -8,6 +8,8 @@ from src.model.sliding_window_attention import QKVProjectionOption
 from src.model.blocks import AttentionBlock
 from src.model.embeddings import ReversibleLongFinBertEmbedding
 
+
+
 @dataclass
 class ReversibleLongBertConfig:
     num_blocks: int
@@ -20,6 +22,7 @@ class ReversibleLongBertConfig:
     projection_option: QKVProjectionOption = QKVProjectionOption.INDIVIDUAL
     vocab_size: int = 50000
     use_pretrained_embeddings: bool = False
+    train_size: float = 0.9
 
 
 class ReversibleLongBert(nn.Module):
@@ -38,7 +41,7 @@ class ReversibleLongBert(nn.Module):
         block_intermediate: List[nn.Module] = []
         for i in range(config.num_blocks):
             block_intermediate.append(AttentionBlock(config.d_model, config.num_heads[i], config.dilation_rates[i],
-                                                     config.segment_lengths[i],config.dropout, config.reversible,
+                                                     config.segment_lengths[i], config.dropout, config.reversible,
                                                      config.projection_option))
 
         self.attention_blocks: nn.Sequential = nn.Sequential(*block_intermediate)
@@ -48,14 +51,16 @@ class ReversibleLongBert(nn.Module):
     def inject_pretrained_embeddings(self, pretrained_embeddings: torch.Tensor):
         self.embedding.inject_pretrained_embeddings(pretrained_embeddings)
 
-    def forward(self, x, segment_ids):
+    def forward(self, x, segment_ids=None):
         x = self.embedding(x, segment_ids)
         x = self.attention_blocks(x)
         return self.prediction_head(x)
 
+
 def main():
+    from src.model.functions import MaskedCrossEntropyLoss
     b, n, d = 128, 1500, 512
-    #x = torch.randn(b, n, d, requires_grad=True).to("cuda")
+    # x = torch.randn(b, n, d, requires_grad=True).to("cuda")
     h = 8
     x = torch.randint(0, 10000, (b, n)).to("cuda")
     segment_ids = torch.randint(0, 3, (b, n)).to("cuda")

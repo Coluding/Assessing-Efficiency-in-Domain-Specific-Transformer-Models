@@ -4,4 +4,5 @@
 ./src/data/__pycache__
 ./src/data/app.log
 ./src/utils/__pycache__
-
+./src/model/app.log
+./src/model/logging
