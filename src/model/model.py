@@ -59,20 +59,21 @@ class ReversibleLongBert(nn.Module):
 
 def main():
     from src.model.functions import MaskedCrossEntropyLoss
-    b, n, d = 128, 1500, 512
+    b, n, d = 32, 1024, 512
     # x = torch.randn(b, n, d, requires_grad=True).to("cuda")
     h = 8
-    x = torch.randint(0, 10000, (b, n)).to("cuda")
+    vocab_size = 51000
+    x = torch.randint(0, vocab_size, (b, n)).to("cuda")
     segment_ids = torch.randint(0, 3, (b, n)).to("cuda")
     blocks = 2
     dilation_rates = [[1, 3, 5]] * blocks
-    segment_lengths = [[250, 500, 1500]] * blocks
+    segment_lengths = [[256, 512, 1024]] * blocks
     config: ReversibleLongBertConfig = ReversibleLongBertConfig(blocks, h, d, dilation_rates=dilation_rates,
                                                                 segment_lengths=segment_lengths,
                                                                 reversible=True, use_pretrained_embeddings=False,
-                                                                vocab_size=10000)
+                                                                vocab_size=vocab_size)
     att = ReversibleLongBert(config).to("cuda")
-    att(x, segment_ids).sum().backward()
+    att(x).sum().backward()
 
 
 if __name__ == "__main__":

@@ -37,10 +37,15 @@ class FinDataset(Dataset):
         self.dynamic_masking = self.config["dynamic_masking"]
         self.lazy_loading = self.config["lazy_loading"]
         self.mask_token_id = self.tokenizer.mask_token_id
+        self.large_memory = self.config["large_memory"]
 
         self.data: List[str] = None
         self.tokenized_data: Dict[torch.Tensor] = None
-        self.chunked_data: torch.Tensor = None
+        if self.large_memory:
+            print("Loading chunked data into memory...")
+            self.chunked_data: List[str] = self.load_chunked_data(0,0)
+            print("Chunked data loaded into memory.")
+        self.tokenized_chunked_data: torch.Tensor = None
         self.domain_words: List[str] = None
         self.synonym_map: Dict[str, List[str]] = None
         self.token_to_vocab: Dict[str, int] = None
@@ -57,7 +62,7 @@ class FinDataset(Dataset):
         if self.data is not None:
             raise ValueError("This instance of the dataset is not set up for lazy loading. "
                              "Please set lazy_loading to True in the config file.")
-        return [x[2] for x in self.database.read_chunked_rows(limit, offset)]
+        return [x[2] for x in self.database.read_chunked_rows(limit, offset) ]
 
 
     def setup_data(self):
@@ -86,7 +91,7 @@ class FinDataset(Dataset):
         :return: None
         """
         self.tokenized_data = self.preprocessor.tokenize_and_pad_list_of_reports(self.data)
-        self.chunked_data = self.preprocessor.chunk_tokenized_reports(self.tokenized_data)
+        self.tokenized_chunked_data = self.preprocessor.chunk_tokenized_reports(self.tokenized_data)
 
     def map_token_sequence_to_vocab(self, tokens: torch.Tensor):
         """
@@ -139,8 +144,12 @@ class FinDataset(Dataset):
 
     def __getitem__(self, index):
         if self.lazy_loading:
-            report = self.load_chunked_data(limit=1, offset=index)[0]
+            if self.large_memory:
+                report = self.chunked_data[index]
+            else:
+                report = self.load_chunked_data(limit=1, offset=index)[0]
             tokenized_report: torch.Tensor = self.preprocessor.tokenize_and_pad_max_length(report)[0]
+
 
         else:
             if self.data is None:
@@ -151,12 +160,13 @@ class FinDataset(Dataset):
             if self.chunked_data is None:
                 raise ValueError("Chunked data has not been set up yet. "
                                  "Please call setup_tokenized_and_chunked_data() first.")
-            tokenized_report = self.chunked_data[index]
+            tokenized_report = self.tokenized_chunked_data[index]
 
+        tokenized_report_to_mask = tokenized_report.clone()
         if self.dynamic_masking:
-            sequence, labels = self.mask_sequence(tokenized_report)
+            sequence, labels = self.mask_sequence(tokenized_report_to_mask)
         else:
-            sequence, labels = self.mask_sequence(tokenized_report, self.seeds[index])
+            sequence, labels = self.mask_sequence(tokenized_report_to_mask, self.seeds[index])
 
         return sequence, tokenized_report
 

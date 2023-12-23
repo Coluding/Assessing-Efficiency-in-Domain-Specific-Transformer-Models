@@ -39,13 +39,17 @@ class Database:
     def inject_loggers(self, logger):
         self.logger = logger
 
-    @remove_none_from_list_decorator(index_to_check=2)
+    #@remove_none_from_list_decorator(index_to_check=2)
     def read_chunked_rows(self, limit: int = 0, offset: int = 0) -> List[List[str]]:
 
         try:
             if self.logger:
                 self.logger.info("Reading chunked rows from database.")
-            query = f'SELECT chunk_id, original_id, text FROM {self.chunk_table_name} LIMIT {limit} OFFSET {offset}'
+
+            if limit == 0 and offset == 0:
+                query = f'SELECT chunk_id, original_id, text FROM {self.chunk_table_name}'
+            else:
+                query = f'SELECT chunk_id, original_id, text FROM {self.chunk_table_name} LIMIT {limit} OFFSET {offset}'
             cursor = self.conn.cursor()
             cursor.execute(query)
             results = cursor.fetchall()

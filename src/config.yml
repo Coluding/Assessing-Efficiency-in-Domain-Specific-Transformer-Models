@@ -11,20 +11,23 @@ debug: True
 tokenizer: "roberta-base"
 masked_probability: 0.15
 context_length: 1500
+learning_rate: 0.00003
 word_context_length: 1300
 context_stride: 512
-num_blocks: 6
+num_blocks: 12
 num_heads: 8
 d_model: 512
 dropout: 0
 reversible: True
 projection_option: 0
-vocab_size: 51000
+vocab_size: 50265
 train_size:  0.9
 use_pretrained_embeddings: False
 padding_value: 1
 dynamic_masking: False
-batch_size: 128
+batch_size: 8
+mixed_precision: True
+large_memory: True
 segment_lengths:
   - 250
   - 500

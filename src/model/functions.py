@@ -53,7 +53,7 @@ class MaskedCrossEntropyLoss(nn.Module):
             return torch.sum(unreduced_loss * mask) / torch.sum(mask)
 
 
-def fit(epochs: int, model: nn.Module, loss: nn.Module, train_loader: DeviceDataLoader,
+def fit(epochs: int, model: nn.Module, loss_fn: nn.Module, train_loader: DeviceDataLoader,
         learning_rate: float, val_loader: DeviceDataLoader, optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler, save_path: str,
         save_best: bool = True, verbose: bool = True, loggable_params: dict = None, lrs_params: dict = None,
@@ -111,7 +111,7 @@ def fit(epochs: int, model: nn.Module, loss: nn.Module, train_loader: DeviceData
             # Enable/Disable Mixed Precision
             with torch.autocast(device_type=inputs[0].device.type, dtype=torch.float16, enabled=mixed_precision):
                 outputs = model(inputs)
-                loss = loss(outputs, inputs, labels)
+                loss = loss_fn(outputs, inputs, labels)
                 scaler.scale(loss).backward()
 
                 # If desired clip gradients
@@ -121,10 +121,14 @@ def fit(epochs: int, model: nn.Module, loss: nn.Module, train_loader: DeviceData
 
                 # Gradient accumulation
                 if (batch_num + 1) % iters_to_accumulate == 0 or (batch_num + 1) == len(train_loader):
+                    if loss.isnan():
+                        print("Loss is NaN. Skipping batch.")
+                        logging.info("Loss is NaN. Skipping batch.")
+                        continue
                     scaler.step(optimizer)
                     scaler.update()
                     optimizer.zero_grad()
-
+                torch.cuda.empty_cache()
             train_loss += loss.item()
             if verbose:
                 print(f"Batch {batch_num + 1}/{len(train_loader)} loss: {loss.item()}")

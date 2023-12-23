@@ -32,14 +32,14 @@ def main():
     train_indices = indices[:train_size]
     val_indices = indices[train_size:]
     train_data = Subset(dataset, train_indices)
-    train_loader = DeviceDataLoader(DataLoader(train_data, batch_size=8, shuffle=True), device)
+    train_loader = DeviceDataLoader(DataLoader(train_data, batch_size=yaml_loader.batch_size, shuffle=True), device)
     val_data = Subset(dataset, val_indices)
-    val_loader = DeviceDataLoader(DataLoader(val_data, batch_size=8, shuffle=False), device)
+    val_loader = DeviceDataLoader(DataLoader(val_data, batch_size=yaml_loader.batch_size, shuffle=False), device)
 
     loss = MaskedCrossEntropyLoss(dataset.mask_token_id).to(device)
     model = ReversibleLongBert(config).to(device)
 
-    loggable_params = {"hparam/batch_size": 8,
+    loggable_params = {"hparam/batch_size": yaml_loader.batch_size,
                      "hparam/num_blocks": yaml_loader.num_blocks,
                      "hparam/num_heads": yaml_loader.num_heads,
                      "hparam/d_model": yaml_loader.d_model,
@@ -49,10 +49,10 @@ def main():
                      "hparam/use_pretrained_embeddings": yaml_loader.use_pretrained_embeddings,
                      "hparam/train_size": yaml_loader.train_size}
 
-    fit(1, model, loss, train_loader, 0.001, val_loader, Adam,
+    fit(1, model, loss, train_loader, yaml_loader.learning_rate, val_loader, Adam,
         CosineAnnealingWarmRestarts, loggable_params=loggable_params, save_path="../checkpoints/finbert",
-         save_best=True, verbose=True, lrs_params={"T_0": 10, "T_mult": 2, "eta_min": 0.00001}, iters_to_accumulate=1,
-        mixed_precision=True, grad_clipping_norm=1.0)
+        save_best=True, verbose=True, lrs_params={"T_0": 10, "T_mult": 2, "eta_min": 0.00001}, iters_to_accumulate=1,
+        mixed_precision=yaml_loader.mixed_precision, grad_clipping_norm=1.0)
 
 
 if __name__ == "__main__":
