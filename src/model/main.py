@@ -2,8 +2,9 @@ import torch
 from torch.utils.data import DataLoader, Subset
 from torch.optim.lr_scheduler import CosineAnnealingLR, CosineAnnealingWarmRestarts
 from torch.optim import Adam
-import numpy as np
+import sys
 
+sys.path.insert(0, '../..')
 
 from src.data.dataset import FinDataset
 from src.model.model import ReversibleLongBert, ReversibleLongBertConfig
