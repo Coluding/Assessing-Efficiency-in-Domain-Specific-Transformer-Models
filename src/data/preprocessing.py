@@ -58,6 +58,7 @@ class Database:
             return results
 
         except sqlite3.Error as e:
+            print("SQLite error: %s" % e)
             if self.logger:
                 self.logger.error(f"SQLite error: {e}")
             return None

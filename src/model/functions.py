@@ -10,9 +10,11 @@ from tqdm import tqdm
 from enum import Enum
 from einops import rearrange
 
-from src.data.dataset import FinDataset
-from src.data.preprocessing import Preprocessing, Database
+import sys
+sys.path.append("../..")
+
 from src.utils.torch_utils import DeviceDataLoader
+from src.data.dataset import FinDataset
 
 
 class LossReduction(Enum):
@@ -44,6 +46,11 @@ class MaskedCrossEntropyLoss(nn.Module):
             predictions = F.log_softmax(predictions, dim=-1)
 
         unreduced_loss = F.nll_loss(predictions, unmasked_ground_truth, reduction="none")
+
+        if unreduced_loss.isnan().any():
+            print("Loss is NaN. Skipping batch.")
+            logging.info("Loss is NaN. Skipping batch.")
+            return torch.tensor(10)
 
         if self.reduction == LossReduction.NONE:
             return unreduced_loss * mask
@@ -78,6 +85,7 @@ def fit(epochs: int, model: nn.Module, loss_fn: nn.Module, train_loader: DeviceD
     :param grad_clipping_norm:
     :return:
     """
+    torch.autograd.set_detect_anomaly(False)
     best_loss = float("inf")
     best_model = None
     history = []
@@ -114,6 +122,11 @@ def fit(epochs: int, model: nn.Module, loss_fn: nn.Module, train_loader: DeviceD
                 loss = loss_fn(outputs, inputs, labels)
                 scaler.scale(loss).backward()
 
+                if loss.isnan():
+                    print("Loss is NaN. Skipping batch.")
+                    logging.info("Loss is NaN. Skipping batch.")
+                    continue
+
                 # If desired clip gradients
                 if grad_clipping_norm:
                     scaler.unscale_(optimizer)
@@ -121,10 +134,6 @@ def fit(epochs: int, model: nn.Module, loss_fn: nn.Module, train_loader: DeviceD
 
                 # Gradient accumulation
                 if (batch_num + 1) % iters_to_accumulate == 0 or (batch_num + 1) == len(train_loader):
-                    if loss.isnan():
-                        print("Loss is NaN. Skipping batch.")
-                        logging.info("Loss is NaN. Skipping batch.")
-                        continue
                     scaler.step(optimizer)
                     scaler.update()
                     optimizer.zero_grad()
@@ -170,9 +179,7 @@ def fit(epochs: int, model: nn.Module, loss_fn: nn.Module, train_loader: DeviceD
 
 
 def main():
-    database = Database("../config.yml")
-    preprocessor = Preprocessing("../config.yml", debug=True)
-    dataset = FinDataset("../config.yml", database, preprocessor)
+    dataset = FinDataset("../config.yml")
     print(dataset[0][0].shape)
     l = MaskedCrossEntropyLoss(50264)
     print(l(torch.randn((1600, 50000)), dataset[0][0], dataset[0][1]))

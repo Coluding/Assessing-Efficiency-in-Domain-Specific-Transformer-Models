@@ -3,6 +3,7 @@
 ./src/model/__pycache__
 ./src/data/__pycache__
 ./src/data/app.log
+./src/data/logging
 ./src/utils/__pycache__
 ./src/model/app.log
 ./src/model/logging

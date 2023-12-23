@@ -3,10 +3,15 @@ import torch.nn as nn
 import torchinfo
 from dataclasses import dataclass, field
 from typing import Sequence, List, Tuple, Union, Optional
+import sys
+
+sys.path.insert(0, '../..')
 
 from src.model.sliding_window_attention import QKVProjectionOption
 from src.model.blocks import AttentionBlock
 from src.model.embeddings import ReversibleLongFinBertEmbedding
+
+
 
 
 
@@ -54,7 +59,11 @@ class ReversibleLongBert(nn.Module):
     def forward(self, x, segment_ids=None):
         x = self.embedding(x, segment_ids)
         x = self.attention_blocks(x)
-        return self.prediction_head(x)
+        out = self.prediction_head(x)
+        if out.isnan().any():
+            print("Output is NaN. Skipping batch.")
+            return out
+        return out
 
 
 def main():

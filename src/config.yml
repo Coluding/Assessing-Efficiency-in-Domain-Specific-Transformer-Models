@@ -11,7 +11,7 @@ debug: True
 tokenizer: "roberta-base"
 masked_probability: 0.15
 context_length: 1500
-learning_rate: 0.00003
+learning_rate: 0.00001
 word_context_length: 1300
 context_stride: 512
 num_blocks: 12

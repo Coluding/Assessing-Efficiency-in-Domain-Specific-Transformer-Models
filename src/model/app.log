@@ -1,7 +1,0 @@
-2023-12-23 21:37:22,743 - DEBUG - Starting new HTTPS connection (1): huggingface.co:443
-2023-12-23 21:37:23,023 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/tokenizer_config.json HTTP/1.1" 404 0
-2023-12-23 21:37:23,143 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/config.json HTTP/1.1" 200 0
-2023-12-23 21:37:23,291 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/tokenizer_config.json HTTP/1.1" 404 0
-2023-12-23 21:37:23,412 - DEBUG - https://huggingface.co:443 "HEAD /roberta-base/resolve/main/vocab.json HTTP/1.1" 200 0
-2023-12-23 21:37:23,551 - INFO - Reading chunked rows from database.
-2023-12-23 21:37:28,558 - ERROR - SQLite error: database is locked
