@@ -8,6 +8,9 @@ import csv
 from tqdm import tqdm
 from time import time
 
+import sys
+sys.path.insert(0, "../../")
+
 from src.utils.utils import timing_decorator, remove_none_from_list_decorator
 
 

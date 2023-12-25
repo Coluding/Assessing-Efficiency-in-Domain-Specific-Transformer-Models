@@ -8,9 +8,13 @@ import logging
 import numpy as np
 from typing import List, Dict
 
+import sys
+
+sys.path.insert(0, "../../")
+
 from src.data.preprocessing import Preprocessing, Database
 from src.utils.utils import timing_decorator, exception_decorator
-from src.external.finroberta.finroberta.finroberta import FinRobertaTokenizer
+
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -33,7 +37,7 @@ class FinDataset(Dataset):
         self.database.inject_loggers(self.logger)
 
         if self.config["use_local_tokenizer"]:
-            self.tokenizer = FinRobertaTokenizer(self.config["local_tokenizer"], self.config["context_length"])
+            raise NotImplementedError("implement local tokenizer")
         else:
             self.tokenizer = transformers.AutoTokenizer.from_pretrained(self.config["tokenizer"])
         self.masked_probability = self.config["masked_probability"]

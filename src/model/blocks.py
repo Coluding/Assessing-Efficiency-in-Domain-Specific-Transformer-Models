@@ -7,6 +7,9 @@ from xformers.components.activations import Activation
 import yaml
 from typing import Sequence
 
+import sys
+sys.path.insert(0, "../../")
+
 from src.model.sliding_window_attention import (
     MultiheadDilatedAttention,
     AttentionProjector,

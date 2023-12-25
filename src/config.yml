@@ -3,7 +3,7 @@ data:
   path: '/home/lubi/Desktop/K_reports_full.sqlite'
   table_name: 'K_reports_full'
   chunk_table_name: "K_reports_full_sliced_1600"
-  csv_table_path:
+  csv_table_path: "~/K_reports_full_sliced_1600.csv"
   limit: 0
   offset: 0
 
