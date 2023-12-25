@@ -50,7 +50,7 @@ class Database:
     def read_data_from_csv(self) -> List[str]:
         if self.config["data"]["csv_path"] is None:
             raise ValueError("Csv path must not be empty")
-
+        csv.field_size_limit(sys.maxsize)
         with open(self.config["data"]["csv_path"], 'r') as file:
             reader = csv.reader(file)
             data = [row for row in reader]
