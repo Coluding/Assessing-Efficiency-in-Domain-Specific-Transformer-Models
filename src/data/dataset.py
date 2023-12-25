@@ -67,7 +67,9 @@ class FinDataset(Dataset):
         self.non_maskable_tokens = list(range(self.config["number_of_ignorable_tokens_for_masking"]))
         self.non_maskable_tokens.extend([self.tokenizer.get_vocab()[","], self.tokenizer.get_vocab()["."],
                                          self.tokenizer.get_vocab()["'"],self.tokenizer.get_vocab()["!"],
-                                         self.tokenizer.get_vocab()["?"]])
+                                         self.tokenizer.get_vocab()["?"],  self.tokenizer.get_vocab()[":"],
+                                         self.tokenizer.get_vocab()["("],  self.tokenizer.get_vocab()[")"]
+                                         ])
 
         self.seeds = [i for i in range(self.__len__())]
 

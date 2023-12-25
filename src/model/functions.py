@@ -85,94 +85,98 @@ def fit(epochs: int, model: nn.Module, loss_fn: nn.Module, train_loader: DeviceD
     :param grad_clipping_norm:
     :return:
     """
-    torch.autograd.set_detect_anomaly(False)
-    best_loss = float("inf")
-    best_model = None
-    history = []
-    run_name = np.random.randint(0, 1000000000)
-    id_full = datetime.now().strftime("%Y-%m-%d %H-%M") + str(run_name)
-    logging.basicConfig(
-        filename='./logging/run.log',
-        filemode='w',
-        format='%(asctime)s %(levelname)s: %(message)s',
-        datefmt='%d.%m.%y %H:%M:%S',
-        level=logging.DEBUG
-    )
-    writer = SummaryWriter(log_dir=f'logging/runs/{id_full}')
-    writer.add_hparams({}, loggable_params)
-    scaler = GradScaler()
-    optimizer = optimizer(model.parameters(), lr=learning_rate)
-    lrs = scheduler(optimizer, **lrs_params)
+    try:
+        torch.autograd.set_detect_anomaly(False)
+        best_loss = float("inf")
+        best_model = None
+        history = []
+        run_name = np.random.randint(0, 1000000000)
+        id_full = datetime.now().strftime("%Y-%m-%d %H-%M") + str(run_name)
+        logging.basicConfig(
+            filename='./logging/run.log',
+            filemode='w',
+            format='%(asctime)s %(levelname)s: %(message)s',
+            datefmt='%d.%m.%y %H:%M:%S',
+            level=logging.DEBUG
+        )
+        writer = SummaryWriter(log_dir=f'logging/runs/{id_full}')
+        writer.add_hparams({}, loggable_params)
+        scaler = GradScaler()
+        optimizer = optimizer(model.parameters(), lr=learning_rate)
+        lrs = scheduler(optimizer, **lrs_params)
 
-    epoch_loader = tqdm(range(epochs), desc="Epochs")
-    for epoch in epoch_loader:
-        if verbose:
-            print(f"Epoch {epoch + 1}/{epochs}")
-        model.train()
-        train_loss = 0
-        optimizer.zero_grad()
-        data = {}
-
-        for batch_num, batch in enumerate(train_loader):
-            inputs, labels = batch
-
-            # Enable/Disable Mixed Precision
-            with torch.autocast(device_type=inputs[0].device.type, dtype=torch.float16, enabled=mixed_precision):
-                outputs = model(inputs)
-                loss = loss_fn(outputs, inputs, labels)
-                scaler.scale(loss).backward()
-
-                if loss.isnan():
-                    print("Loss is NaN. Skipping batch.")
-                    logging.info("Loss is NaN. Skipping batch.")
-                    continue
-
-                # Gradient accumulation
-                if (batch_num + 1) % iters_to_accumulate == 0 or (batch_num + 1) == len(train_loader):
-                    if grad_clipping_norm:
-                        scaler.unscale_(optimizer)
-                        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-                    scaler.step(optimizer)
-                    scaler.update()
-                    optimizer.zero_grad()
-                torch.cuda.empty_cache()
-            train_loss += loss.item()
+        epoch_loader = tqdm(range(epochs), desc="Epochs")
+        for epoch in epoch_loader:
             if verbose:
-                print(f"Batch {batch_num + 1}/{len(train_loader)} loss: {loss.item()}")
-                logging.info(f"Batch {batch_num + 1}/{len(train_loader)} loss: {loss.item()}")
+                print(f"Epoch {epoch + 1}/{epochs}")
+            model.train()
+            train_loss = 0
+            optimizer.zero_grad()
+            data = {}
 
-        lrs.step()
-        train_loss /= len(train_loader)
-        writer.add_scalar('Loss/train', train_loss, epoch)
-        if verbose:
-            print(f"Epoch [{epoch}] train loss: {train_loss}")
-            logging.info(f"Epoch [{epoch}] train loss: {train_loss}")
-
-        data['train_loss'] = train_loss
-
-        model.eval()
-        val_loss = 0
-        with torch.no_grad():
-            for batch in val_loader:
+            for batch_num, batch in enumerate(train_loader):
                 inputs, labels = batch
-                outputs = model(inputs)
-                loss = loss(inputs, outputs, labels)
-                val_loss += loss.item()
-        val_loss /= len(val_loader)
-        writer.add_scalar('Loss/val', val_loss, epoch)
-        data['val_loss'] = val_loss
-        writer.add_scalar("Learning rate", optimizer.param_groups[0]['lr'], epoch)
-        if verbose:
-            print(f"Epoch {epoch} validation loss: {val_loss}")
-            logging.info(f"Epoch {epoch} validation loss: {val_loss}")
 
-        if data['val_loss'] < best_loss:
-            best_loss = data['val_loss']
-            best_model = model
-            if save_best:
-                torch.save(best_model.state_dict(), save_path)
+                # Enable/Disable Mixed Precision
+                with torch.autocast(device_type=inputs[0].device.type, dtype=torch.float16, enabled=mixed_precision):
+                    outputs = model(inputs)
+                    loss = loss_fn(outputs, inputs, labels)
+                    scaler.scale(loss).backward()
 
-        history.append(data)
+                    if loss.isnan():
+                        print("Loss is NaN. Skipping batch.")
+                        logging.info("Loss is NaN. Skipping batch.")
+                        continue
+
+                    # Gradient accumulation
+                    if (batch_num + 1) % iters_to_accumulate == 0 or (batch_num + 1) == len(train_loader):
+                        if grad_clipping_norm:
+                            scaler.unscale_(optimizer)
+                            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                        scaler.step(optimizer)
+                        scaler.update()
+                        optimizer.zero_grad()
+                    torch.cuda.empty_cache()
+                train_loss += loss.item()
+                if verbose:
+                    print(f"Batch {batch_num + 1}/{len(train_loader)} loss: {loss.item()}")
+                    logging.info(f"Batch {batch_num + 1}/{len(train_loader)} loss: {loss.item()}")
+
+            lrs.step()
+            train_loss /= len(train_loader)
+            writer.add_scalar('Loss/train', train_loss, epoch)
+            if verbose:
+                print(f"Epoch [{epoch}] train loss: {train_loss}")
+                logging.info(f"Epoch [{epoch}] train loss: {train_loss}")
+
+            data['train_loss'] = train_loss
+
+            model.eval()
+            val_loss = 0
+            with torch.no_grad():
+                for batch in val_loader:
+                    inputs, labels = batch
+                    outputs = model(inputs)
+                    loss = loss(inputs, outputs, labels)
+                    val_loss += loss.item()
+            val_loss /= len(val_loader)
+            writer.add_scalar('Loss/val', val_loss, epoch)
+            data['val_loss'] = val_loss
+            writer.add_scalar("Learning rate", optimizer.param_groups[0]['lr'], epoch)
+            if verbose:
+                print(f"Epoch {epoch} validation loss: {val_loss}")
+                logging.info(f"Epoch {epoch} validation loss: {val_loss}")
+
+            if data['val_loss'] < best_loss:
+                best_loss = data['val_loss']
+                best_model = model
+                if save_best:
+                    torch.save(best_model.state_dict(), save_path)
+
+            history.append(data)
+
+    except KeyboardInterrupt:
+        torch.save(model.state_dict(), "../checkpoints/interrupt_model")
 
 
 

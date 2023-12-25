@@ -30,8 +30,8 @@ vocab_size: 30874
 train_size:  0.9
 use_pretrained_embeddings: False
 padding_value: 1
-dynamic_masking: False
-batch_size: 8
+dynamic_masking: True
+batch_size: 16
 accumulate_steps: 1
 mixed_precision: False
 large_memory: True
