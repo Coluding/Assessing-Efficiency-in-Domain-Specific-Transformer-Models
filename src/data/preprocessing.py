@@ -20,7 +20,10 @@ class Database:
     def __init__(self, config_path: str, debug: bool = False):
         with open(config_path, "r") as file:
             self.config = yaml.safe_load(file)
-        self.conn = sqlite3.connect(self.config["data"]["path"])
+
+        self.use_csv = self.config["data"]["use_csv"]
+        if not self.use_csv:
+            self.conn = sqlite3.connect(self.config["data"]["path"])
         self.table_name = self.config["data"]["table_name"]
         self.chunk_table_name = self.config["data"]["chunk_table_name"]
         self.logger = None
@@ -28,7 +31,8 @@ class Database:
         self.is_closed = False
 
     def __del__(self):
-        self.conn.close()
+        if not self.use_csv:
+            self.conn.close()
 
     def chunked_len(self):
         cursor = self.conn.cursor()
