@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import DataLoader, Subset
 from torch.optim.lr_scheduler import CosineAnnealingLR, CosineAnnealingWarmRestarts
-from torch.optim import Adam
+from torch.optim import Adam, AdamW
 import sys
 
 sys.path.insert(0, '../..')
@@ -50,11 +50,11 @@ def main():
                      "hparam/use_pretrained_embeddings": yaml_loader.use_pretrained_embeddings,
                      "hparam/train_size": yaml_loader.train_size}
 
-    fit(12, model, loss, train_loader, yaml_loader.learning_rate, val_loader, Adam,
+    fit(12, model, loss, train_loader, yaml_loader.learning_rate, val_loader, AdamW,
         CosineAnnealingWarmRestarts, loggable_params=loggable_params, save_path="../checkpoints/finbert",
-        save_best=True, verbose=True, lrs_params={"T_0": 10, "T_mult": 2, "eta_min": 0.00001},
+        save_best=True, verbose=True, lrs_params={"T_0": 2, "T_mult": 1, "eta_min": 0.000001},
         iters_to_accumulate=yaml_loader.accumulate_steps, mixed_precision=yaml_loader.mixed_precision,
-        grad_clipping_norm=None)
+        grad_clipping_norm=None, batch_share=yaml_loader["batch_sample_size"])
 
 
 if __name__ == "__main__":

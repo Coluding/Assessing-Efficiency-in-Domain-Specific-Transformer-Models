@@ -64,7 +64,8 @@ def fit(epochs: int, model: nn.Module, loss_fn: nn.Module, train_loader: DeviceD
         learning_rate: float, val_loader: DeviceDataLoader, optimizer: torch.optim.Optimizer,
         scheduler: torch.optim.lr_scheduler, save_path: str,
         save_best: bool = True, verbose: bool = True, loggable_params: dict = None, lrs_params: dict = None,
-        iters_to_accumulate: int = 1, mixed_precision: bool = False, grad_clipping_norm: float = 1.0):
+        iters_to_accumulate: int = 1, mixed_precision: bool = False, grad_clipping_norm: float = 1.0,
+        batch_share: float = 1):
     """
     Fits a given model to the given data.
     :param epochs:
@@ -141,6 +142,10 @@ def fit(epochs: int, model: nn.Module, loss_fn: nn.Module, train_loader: DeviceD
                 if verbose:
                     print(f"Batch {batch_num + 1}/{len(train_loader)} loss: {loss.item()}")
                     logging.info(f"Batch {batch_num + 1}/{len(train_loader)} loss: {loss.item()}")
+
+                if batch_num == int(batch_share * len(train_loader)):
+                    # early leave of epoch
+                    break
 
             lrs.step()
             train_loss /= len(train_loader)
