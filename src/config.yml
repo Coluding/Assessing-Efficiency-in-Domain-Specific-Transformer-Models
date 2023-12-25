@@ -1,7 +1,9 @@
 data:
+  use_csv: True
   path: '/home/lubi/Desktop/K_reports_full.sqlite'
   table_name: 'K_reports_full'
   chunk_table_name: "K_reports_full_sliced_1600"
+  csv_table_path:
   limit: 0
   offset: 0
 

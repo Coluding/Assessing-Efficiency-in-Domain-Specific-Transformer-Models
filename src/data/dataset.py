@@ -77,6 +77,10 @@ class FinDataset(Dataset):
         if self.data is not None:
             raise ValueError("This instance of the dataset is not set up for lazy loading. "
                              "Please set lazy_loading to True in the config file.")
+
+        if self.config["data"]["use_csv"]:
+            return [x[-1] for x in self.database.read_data_from_csv()]
+
         return [x[2] for x in self.database.read_chunked_rows(limit, offset)]
 
     def setup_data(self):

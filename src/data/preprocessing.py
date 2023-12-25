@@ -4,6 +4,7 @@ from nltk import sent_tokenize, word_tokenize
 from transformers import AutoTokenizer
 import torch
 import yaml
+import csv
 from tqdm import tqdm
 from time import time
 
@@ -38,6 +39,16 @@ class Database:
 
     def inject_loggers(self, logger):
         self.logger = logger
+
+    def read_data_from_csv(self) -> List[str]:
+        if self.config["data"]["csv_path"] is None:
+            raise ValueError("Csv path must not be empty")
+
+        with open(self.config["data"]["csv_path"], 'r') as file:
+            reader = csv.reader(file)
+            data = [row for row in reader]
+        return data
+
 
     #@remove_none_from_list_decorator(index_to_check=2)
     def read_chunked_rows(self, limit: int = 0, offset: int = 0) -> List[List[str]]:
