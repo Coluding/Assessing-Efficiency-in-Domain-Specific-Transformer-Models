@@ -151,7 +151,9 @@ class FinDataset(Dataset):
         return sequence, labels
 
     def __len__(self):
-        if self.data is None:
+        if self.chunked_data is not None and self.large_memory:
+            return len(self.chunked_data)
+        elif self.data is not None:
             return self.database.chunked_len()
         else:
             return self.database.original_len()
