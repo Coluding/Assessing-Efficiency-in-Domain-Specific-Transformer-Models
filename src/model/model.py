@@ -61,7 +61,8 @@ class ReversibleLongBert(nn.Module):
         x = self.attention_blocks(x)
         out = self.prediction_head(x)
         if out.isnan().any():
-            print("Output is NaN. Skipping batch.")
+            print("Output is NaN. Replacing.")
+            out[out.isnan()] = 0
             return out
         return out
 

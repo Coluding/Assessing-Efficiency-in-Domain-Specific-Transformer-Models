@@ -127,13 +127,11 @@ def fit(epochs: int, model: nn.Module, loss_fn: nn.Module, train_loader: DeviceD
                     logging.info("Loss is NaN. Skipping batch.")
                     continue
 
-                # If desired clip gradients
-                if grad_clipping_norm:
-                    scaler.unscale_(optimizer)
-                    torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-
                 # Gradient accumulation
                 if (batch_num + 1) % iters_to_accumulate == 0 or (batch_num + 1) == len(train_loader):
+                    if grad_clipping_norm:
+                        scaler.unscale_(optimizer)
+                        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
                     scaler.step(optimizer)
                     scaler.update()
                     optimizer.zero_grad()

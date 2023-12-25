@@ -8,10 +8,14 @@ data:
 
 lazy_loading: True
 debug: True
-tokenizer: "roberta-base"
+number_of_ignorable_tokens_for_masking: 25
+pad_token_id: 1
+tokenizer: "yiyanghkust/finbert-tone"
+use_local_tokenizer: False
+local_tokenizer: "/home/lubi/Documents/Projects/BA/src/external/finroberta/data/finroberta_tokenizer.json"
 masked_probability: 0.15
 context_length: 1500
-learning_rate: 0.00001
+learning_rate: 0.00003
 word_context_length: 1300
 context_stride: 512
 num_blocks: 12
@@ -20,13 +24,14 @@ d_model: 512
 dropout: 0
 reversible: True
 projection_option: 0
-vocab_size: 50265
+vocab_size: 30874
 train_size:  0.9
 use_pretrained_embeddings: False
 padding_value: 1
 dynamic_masking: False
 batch_size: 8
-mixed_precision: True
+accumulate_steps: 1
+mixed_precision: False
 large_memory: True
 segment_lengths:
   - 250

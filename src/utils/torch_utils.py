@@ -1,4 +1,43 @@
 import torch
+import matplotlib.pyplot as plt
+import torch.nn.functional as F
+
+
+
+def plot_softmax_bar(tensor):
+    """
+    Plots a bar chart of the softmax values of a PyTorch tensor.
+
+    Args:
+    tensor (torch.Tensor): The input tensor.
+    """
+    # Apply softmax to the tensor
+    softmax_values = F.softmax(tensor, dim=-1).flatten()
+
+    # Plot bar chart
+    plt.bar(range(len(softmax_values)), softmax_values.detach().numpy())
+    plt.title('Bar Chart of Softmax Values')
+    plt.xlabel('Index')
+    plt.ylabel('Softmax Value')
+    plt.show()
+
+def plot_softmax_histogram(tensor):
+    """
+    Plots a histogram of the softmax values of a PyTorch tensor.
+
+    Args:
+    tensor (torch.Tensor): The input tensor.
+    """
+    # Apply softmax to the tensor
+    softmax_values = F.softmax(tensor, dim=-1).flatten()
+
+    # Plot histogram
+    plt.hist(softmax_values.detach().numpy(), bins=50, facecolor='blue', alpha=0.7)
+    plt.title('Histogram of Softmax Values')
+    plt.xlabel('Softmax Value')
+    plt.ylabel('Frequency')
+    plt.show()
+
 
 def get_default_device():
     """

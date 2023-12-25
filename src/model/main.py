@@ -50,10 +50,11 @@ def main():
                      "hparam/use_pretrained_embeddings": yaml_loader.use_pretrained_embeddings,
                      "hparam/train_size": yaml_loader.train_size}
 
-    fit(1, model, loss, train_loader, yaml_loader.learning_rate, val_loader, Adam,
+    fit(12, model, loss, train_loader, yaml_loader.learning_rate, val_loader, Adam,
         CosineAnnealingWarmRestarts, loggable_params=loggable_params, save_path="../checkpoints/finbert",
-        save_best=True, verbose=True, lrs_params={"T_0": 10, "T_mult": 2, "eta_min": 0.00001}, iters_to_accumulate=1,
-        mixed_precision=yaml_loader.mixed_precision, grad_clipping_norm=1.0)
+        save_best=True, verbose=True, lrs_params={"T_0": 10, "T_mult": 2, "eta_min": 0.00001},
+        iters_to_accumulate=yaml_loader.accumulate_steps, mixed_precision=yaml_loader.mixed_precision,
+        grad_clipping_norm=None)
 
 
 if __name__ == "__main__":
