@@ -54,7 +54,7 @@ def main():
         CosineAnnealingWarmRestarts, loggable_params=loggable_params, save_path="../checkpoints/finbert",
         save_best=True, verbose=True, lrs_params={"T_0": 2, "T_mult": 1, "eta_min": 0.000001},
         iters_to_accumulate=yaml_loader.accumulate_steps, mixed_precision=yaml_loader.mixed_precision,
-        grad_clipping_norm=None, batch_share=yaml_loader["batch_sample_size"])
+        grad_clipping_norm=None, batch_share=yaml_loader.batch_sample_size)
 
 
 if __name__ == "__main__":
