@@ -1,15 +1,8 @@
 import torch
-from torch.utils.data import DataLoader, Subset
-from torch.optim.lr_scheduler import CosineAnnealingLR, CosineAnnealingWarmRestarts
-from torch.optim import Adam
-import numpy as np
 import unittest
 
-from src.data.dataset import FinDataset
-from src.model.model import ReversibleLongBert, ReversibleLongBertConfig
-from src.model.functions import MaskedCrossEntropyLoss, fit
+from src.model.custom import ReversibleLongBert, ReversibleLongBertConfig
 from src.utils.utils import YamlConfigLoader
-from src.utils.torch_utils import DeviceDataLoader
 
 
 class TestModel(unittest.TestCase):

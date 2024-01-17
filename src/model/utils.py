@@ -1,20 +1,74 @@
 import einops
 import torch
-import xformers.components
-from xformers.components.attention import (
-    Attention,
-    AttentionConfig,
-    AttentionMask,
-    maybe_sparsify,
-    register_attention,
-    sparsify,
-)
-from xformers.components.attention.attention_patterns import (
-    causal_1d_pattern,
-    local_1d_pattern,
-)
+from typing import *
 from torch.profiler import profile, record_function, ProfilerActivity
 from typing import Union, Set, Tuple, List
+from transformers import TrainingArguments, set_seed
+from dataclasses import dataclass
+
+
+def my_set_seed(seed: int):
+    """
+
+    :param seed:
+    """
+    set_seed(seed=seed)
+    torch.backends.cudnn.deterministic = True  # needed for reproducible experiments
+    torch.backends.cudnn.benchmark = False
+
+def training_args_from_yaml(yaml_file: str, key=None) -> TrainingArguments:
+    """
+    Helper function to load Huggingface tokenizers
+    :param yaml_file:
+    :return: tokenizer instance
+    """
+    import yaml
+    with open(yaml_file, 'r') as stream:
+        try:
+            yaml_dict = yaml.safe_load(stream)
+            if key is not None:
+                yaml_dict = yaml_dict[key]
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    return TrainingArguments(**yaml_dict)
+
+@dataclass
+class MyTrainingArguments(TrainingArguments):
+    """
+        Class to overload the default HF TrainingArguments in order to keep custom parameters in Tensorboard
+    """
+    pretrain_path: str = None
+    freeze_weight: bool = None
+    optimizer: str = None
+    training_set_size: int = None
+    layerwise_lr_decay_power: float = None
+
+    training_set_random_seed: int = None
+    valid_test_split_random_seed: int = None
+
+    threshold_to_train_generator: float = None
+    metric_to_train_generator: str = None
+
+    def to_sanitized_dict(self) -> Dict[str, Any]:
+        """
+        Sanitized serialization to use with TensorBoard’s hparams
+        This method is strongly inspired by the HuggingFace's method
+        See transformers\training_args.py
+        """
+        return to_sanitized_dict(self)
+
+
+def to_sanitized_dict(self) -> Dict[str, Any]:
+    """
+    Sanitized serialization to use with TensorBoard’s hparams
+    This method is strongly inspired by the HuggingFace's method
+    See transformers\training_args.py
+    """
+    d = self.__dict__.copy()
+    valid_types = [bool, int, float, str, torch.Tensor]
+    return {k: v if type(v) in valid_types else str(v) for k, v in d.items()}
+
 
 def mem_use(title, fn, *args, **kwargs):
     # bookeeping
@@ -31,7 +85,7 @@ def mem_use(title, fn, *args, **kwargs):
 
     # now report
     max_memory = torch.cuda.max_memory_allocated() // 2 ** 20
-    print(f"{title} - Peak memory use: {max_memory}MB - {round((stop-start)*1e6)/1e3}ms")
+    print(f"{title} - Peak memory use: {max_memory}MB - {round((stop - start) * 1e6) / 1e3}ms")
 
 
 def track_cuda_memory(title, function, *args, **kwargs):
@@ -46,7 +100,6 @@ def track_cuda_memory(title, function, *args, **kwargs):
     return result
 
 
-
 def evaluate_cuda_memory(function, *args, **kwargs):
     """
     Evaluates the CUDA memory usage of a PyTorch function using torch.profiler.
@@ -57,7 +110,6 @@ def evaluate_cuda_memory(function, *args, **kwargs):
     :return: A string containing the profiling results, specifically focusing on CUDA memory usage.
     """
 
-
     # Make sure CUDA is available
     if not torch.cuda.is_available():
         return "CUDA is not available. Cannot profile CUDA memory usage."
@@ -66,7 +118,6 @@ def evaluate_cuda_memory(function, *args, **kwargs):
     with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA],
                  profile_memory=True,
                  record_shapes=True) as prof:
-
         with record_function("model_inference"):
             function(*args, **kwargs)
 
@@ -125,18 +176,16 @@ def symmetric_global_token_mask(global_indices: torch.Tensor, size: int) -> torc
     :param size: Size of the sequence.
     :return: Boolean tensor of shape size x size.
     """
-    global_mask = torch.zeros(size ,size).bool()
+    global_mask = torch.zeros(size, size).bool()
 
     # make symmetric global mask
-    global_mask[global_indices,:] = True
+    global_mask[global_indices, :] = True
     global_mask[:, global_indices] = True
 
     return global_mask
 
 
 # #################################################### deprecated ####################################################
-
-
 
 
 def slice_tensor_in_windows(tensor: torch.Tensor, window_size: int, dilation_rate: int
@@ -183,20 +232,20 @@ def slice_tensor_in_windows(tensor: torch.Tensor, window_size: int, dilation_rat
 def remove_global_attention_token_create_global_attention_tensor(embedding: torch.Tensor,
                                                                  global_attention_indices: torch.Tensor,
                                                                  receiver: torch.nn.Module = None) \
-        -> Tuple[torch.Tensor,torch.Tensor]:
+        -> Tuple[torch.Tensor, torch.Tensor]:
     """
-    Removes global attention tokens from an embedding and creates a global attention tensor.
+    Removes global attention tokens from an config and creates a global attention tensor.
 
-    This function takes an embedding tensor and a sliced version of it, along with indices
+    This function takes an config tensor and a sliced version of it, along with indices
     specifying global attention tokens. It creates a tensor containing only the global attention
-    parts of the embedding and also returns a reduced version of the sliced embedding where the
+    parts of the config and also returns a reduced version of the sliced config where the
     global attention tokens have been removed.
 
-    :param embedding: The original embedding tensor.
-    :param global_attention_indices:  Indices of tokens in the embedding that are considered
+    :param embedding: The original config tensor.
+    :param global_attention_indices:  Indices of tokens in the config that are considered
                                              as global attention tokens.
     :return: A tuple containing the global attention tensor and the reduced
-                                       sliced embedding tensor
+                                       sliced config tensor
     """
 
     channels_to_keep = set(list(range(0, len(embedding[0])))).difference(set(global_attention_indices.tolist()))
@@ -207,5 +256,3 @@ def remove_global_attention_token_create_global_attention_tensor(embedding: torc
         receiver.local_token_indices = torch.tensor(list(channels_to_keep))
 
     return global_attention_tensor, reduced_sliced_embedding
-
-

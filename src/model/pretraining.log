@@ -1,0 +1,246 @@
+2024-01-17 19:14:24,247 - src.model.modelling_electra - INFO - Number of attention layers must match number of hidden layers. 
+Number of attention layers: 12. Number of specified layers: 6
+Do you want me to construct the missing layers? [y/n]
+2024-01-17 19:15:12,512 - src.model.modelling_electra - INFO - Constructing missing layers...
+2024-01-17 19:15:13,951 - src.data.preprocessing - INFO - Dataset preprocessing started
+2024-01-17 19:15:13,952 - src.data.preprocessing - INFO - Load a cached dataset from ../data/data/JanosAudran/financial-reports-sec-None.cache
+2024-01-17 19:15:13,953 - fsspec.local - DEBUG - open file: /home/lubi/Documents/Projects/BA/src/model/../data/data/JanosAudran/financial-reports-sec-None.cache/dataset_dict.json
+2024-01-17 19:15:18,476 - src.data.preprocessing - INFO - Load completed
+2024-01-17 19:15:18,477 - src.data.preprocessing - INFO - Dataset preprocessing completed
+2024-01-17 19:15:41,805 - src.data.preprocessing - INFO - Training size: 33658063
+2024-01-17 19:15:41,806 - src.data.preprocessing - INFO - Valid size: 100
+2024-01-17 19:15:42,885 - __main__ - INFO - ***** Running training *****
+2024-01-17 19:15:42,886 - __main__ - INFO -   Num examples = 33658063
+2024-01-17 19:15:42,887 - __main__ - INFO -   Num Epochs = 1
+2024-01-17 19:15:42,887 - __main__ - INFO -   Instantaneous batch size per device = 1
+2024-01-17 19:15:42,887 - __main__ - INFO -   Total train batch size (w. parallel, distributed & accumulation) = (4.0, 1)
+2024-01-17 19:15:42,888 - __main__ - INFO -   Gradient Accumulation steps = 4
+2024-01-17 19:15:44,059 - __main__ - INFO -   Total optimization steps = 1000000
+2024-01-17 19:17:47,780 - src.model.modelling_electra - INFO - Number of attention layers must match number of hidden layers. 
+Number of attention layers: 12. Number of specified layers: 6
+Do you want me to construct the missing layers? [y/n]
+2024-01-17 19:18:07,783 - src.model.modelling_electra - INFO - Constructing missing layers...
+2024-01-17 19:18:09,104 - src.data.preprocessing - INFO - Dataset preprocessing started
+2024-01-17 19:18:09,105 - src.data.preprocessing - INFO - Load a cached dataset from ../data/data/JanosAudran/financial-reports-sec-None.cache
+2024-01-17 19:18:09,106 - fsspec.local - DEBUG - open file: /home/lubi/Documents/Projects/BA/src/model/../data/data/JanosAudran/financial-reports-sec-None.cache/dataset_dict.json
+2024-01-17 19:18:12,901 - src.data.preprocessing - INFO - Load completed
+2024-01-17 19:18:12,902 - src.data.preprocessing - INFO - Dataset preprocessing completed
+2024-01-17 19:18:33,309 - src.data.preprocessing - INFO - Training size: 33658063
+2024-01-17 19:18:33,309 - src.data.preprocessing - INFO - Valid size: 100
+2024-01-17 19:18:34,212 - __main__ - INFO - ***** Running training *****
+2024-01-17 19:18:34,212 - __main__ - INFO -   Num examples = 33658063
+2024-01-17 19:18:34,213 - __main__ - INFO -   Num Epochs = 8
+2024-01-17 19:18:34,213 - __main__ - INFO -   Instantaneous batch size per device = 64
+2024-01-17 19:18:34,213 - __main__ - INFO -   Total train batch size (w. parallel, distributed & accumulation) = (256.0, 1)
+2024-01-17 19:18:34,213 - __main__ - INFO -   Gradient Accumulation steps = 4
+2024-01-17 19:18:35,086 - __main__ - INFO -   Total optimization steps = 1000000
+2024-01-17 19:18:47,231 - __main__ - INFO - {'loss': 45.08248392740885, 'learning_rate': 1.5e-07, 'epoch': 0.0, 'step': 3}
+2024-01-17 19:18:47,319 - __main__ - INFO - ***** Running Evaluation *****
+2024-01-17 19:18:47,319 - __main__ - INFO -   Num examples = 100
+2024-01-17 19:18:47,319 - __main__ - INFO -   Batch size = 1
+2024-01-17 19:19:02,466 - __main__ - INFO - {'eval_loss': 45.10914611816406, 'eval_runtime': 15.2304, 'eval_samples_per_second': 6.566, 'eval_steps_per_second': 6.566, 'epoch': 0.0, 'step': 3}
+2024-01-17 19:21:01,298 - src.model.modelling_electra - INFO - Number of attention layers must match number of hidden layers. 
+Number of attention layers: 12. Number of specified layers: 6
+Do you want me to construct the missing layers? [y/n]
+2024-01-17 19:21:21,300 - src.model.modelling_electra - INFO - Constructing missing layers...
+2024-01-17 19:21:22,751 - src.data.preprocessing - INFO - Dataset preprocessing started
+2024-01-17 19:21:22,751 - src.data.preprocessing - INFO - Load a cached dataset from ../data/data/JanosAudran/financial-reports-sec-None.cache
+2024-01-17 19:21:22,753 - fsspec.local - DEBUG - open file: /home/lubi/Documents/Projects/BA/src/model/../data/data/JanosAudran/financial-reports-sec-None.cache/dataset_dict.json
+2024-01-17 19:21:26,488 - src.data.preprocessing - INFO - Load completed
+2024-01-17 19:21:26,488 - src.data.preprocessing - INFO - Dataset preprocessing completed
+2024-01-17 19:21:46,859 - src.data.preprocessing - INFO - Training size: 33658063
+2024-01-17 19:21:46,860 - src.data.preprocessing - INFO - Valid size: 100
+2024-01-17 19:21:47,849 - __main__ - INFO - ***** Running training *****
+2024-01-17 19:21:47,850 - __main__ - INFO -   Num examples = 33658063
+2024-01-17 19:21:47,850 - __main__ - INFO -   Num Epochs = 8
+2024-01-17 19:21:47,850 - __main__ - INFO -   Instantaneous batch size per device = 64
+2024-01-17 19:21:47,851 - __main__ - INFO -   Total train batch size (w. parallel, distributed & accumulation) = (256.0, 1)
+2024-01-17 19:21:47,851 - __main__ - INFO -   Gradient Accumulation steps = 4
+2024-01-17 19:21:48,725 - __main__ - INFO -   Total optimization steps = 1000000
+2024-01-17 19:22:00,712 - __main__ - INFO - {'loss': 45.08064270019531, 'learning_rate': 1.5e-07, 'epoch': 0.0, 'step': 3}
+2024-01-17 19:22:00,804 - __main__ - INFO - ***** Running Evaluation *****
+2024-01-17 19:22:00,805 - __main__ - INFO -   Num examples = 100
+2024-01-17 19:22:00,805 - __main__ - INFO -   Batch size = 1
+2024-01-17 19:22:09,682 - __main__ - INFO - {'eval_loss': 45.126258850097656, 'eval_runtime': 8.9667, 'eval_samples_per_second': 11.152, 'eval_steps_per_second': 11.152, 'epoch': 0.0, 'step': 3}
+2024-01-17 19:22:09,686 - __main__ - INFO - {'eval_loss': 45.126258850097656, 'eval_runtime': 8.9667, 'eval_samples_per_second': 11.152, 'eval_steps_per_second': 11.152, 'epoch': 0.0, 'step': 3}
+2024-01-17 19:23:16,782 - __main__ - INFO - {'loss': 3.755121866861979, 'learning_rate': 1.5e-07, 'epoch': 0.0, 'step': 3}
+2024-01-17 19:23:16,788 - __main__ - INFO - ***** Running Evaluation *****
+2024-01-17 19:23:16,788 - __main__ - INFO -   Num examples = 100
+2024-01-17 19:23:16,789 - __main__ - INFO -   Batch size = 1
+2024-01-17 19:23:26,456 - __main__ - INFO - {'eval_loss': 45.12893295288086, 'eval_runtime': 9.6678, 'eval_samples_per_second': 10.344, 'eval_steps_per_second': 10.344, 'epoch': 0.0, 'step': 3}
+2024-01-17 19:23:26,460 - __main__ - INFO - {'eval_loss': 45.12893295288086, 'eval_runtime': 9.6678, 'eval_samples_per_second': 10.344, 'eval_steps_per_second': 10.344, 'epoch': 0.0, 'step': 3}
+2024-01-17 19:23:27,266 - __main__ - INFO - {'loss': 3.756317138671875, 'learning_rate': 1.5e-07, 'epoch': 0.0, 'step': 3}
+2024-01-17 19:23:27,270 - __main__ - INFO - ***** Running Evaluation *****
+2024-01-17 19:23:27,271 - __main__ - INFO -   Num examples = 100
+2024-01-17 19:23:27,271 - __main__ - INFO -   Batch size = 1
+2024-01-17 19:23:36,128 - __main__ - INFO - {'eval_loss': 45.13653564453125, 'eval_runtime': 8.8572, 'eval_samples_per_second': 11.29, 'eval_steps_per_second': 11.29, 'epoch': 0.0, 'step': 3}
+2024-01-17 19:23:36,132 - __main__ - INFO - {'eval_loss': 45.13653564453125, 'eval_runtime': 8.8572, 'eval_samples_per_second': 11.29, 'eval_steps_per_second': 11.29, 'epoch': 0.0, 'step': 3}
+2024-01-17 19:23:36,904 - __main__ - INFO - {'loss': 3.7577921549479165, 'learning_rate': 1.5e-07, 'epoch': 0.0, 'step': 3}
+2024-01-17 19:23:36,909 - __main__ - INFO - ***** Running Evaluation *****
+2024-01-17 19:23:36,909 - __main__ - INFO -   Num examples = 100
+2024-01-17 19:23:36,910 - __main__ - INFO -   Batch size = 1
+2024-01-17 19:23:45,923 - __main__ - INFO - {'eval_loss': 45.10344314575195, 'eval_runtime': 9.0142, 'eval_samples_per_second': 11.094, 'eval_steps_per_second': 11.094, 'epoch': 0.0, 'step': 3}
+2024-01-17 19:23:45,927 - __main__ - INFO - {'eval_loss': 45.10344314575195, 'eval_runtime': 9.0142, 'eval_samples_per_second': 11.094, 'eval_steps_per_second': 11.094, 'epoch': 0.0, 'step': 3}
+2024-01-17 19:23:51,338 - __main__ - INFO - {'loss': 33.79920450846354, 'learning_rate': 3e-07, 'epoch': 0.0, 'step': 6}
+2024-01-17 19:23:51,343 - __main__ - INFO - ***** Running Evaluation *****
+2024-01-17 19:23:51,344 - __main__ - INFO -   Num examples = 100
+2024-01-17 19:23:51,344 - __main__ - INFO -   Batch size = 1
+2024-01-17 19:24:01,539 - __main__ - INFO - {'eval_loss': 45.10526657104492, 'eval_runtime': 10.1963, 'eval_samples_per_second': 9.807, 'eval_steps_per_second': 9.807, 'epoch': 0.0, 'step': 6}
+2024-01-17 19:24:01,544 - __main__ - INFO - {'eval_loss': 45.10526657104492, 'eval_runtime': 10.1963, 'eval_samples_per_second': 9.807, 'eval_steps_per_second': 9.807, 'epoch': 0.0, 'step': 6}
+2024-01-17 19:24:02,896 - __main__ - INFO - {'loss': 3.7557474772135415, 'learning_rate': 3e-07, 'epoch': 0.0, 'step': 6}
+2024-01-17 19:24:02,900 - __main__ - INFO - ***** Running Evaluation *****
+2024-01-17 19:24:02,901 - __main__ - INFO -   Num examples = 100
+2024-01-17 19:24:02,901 - __main__ - INFO -   Batch size = 1
+2024-01-17 19:24:12,090 - __main__ - INFO - {'eval_loss': 45.09438705444336, 'eval_runtime': 9.1895, 'eval_samples_per_second': 10.882, 'eval_steps_per_second': 10.882, 'epoch': 0.0, 'step': 6}
+2024-01-17 19:24:12,097 - __main__ - INFO - {'eval_loss': 45.09438705444336, 'eval_runtime': 9.1895, 'eval_samples_per_second': 10.882, 'eval_steps_per_second': 10.882, 'epoch': 0.0, 'step': 6}
+2024-01-17 19:26:02,389 - src.model.modelling_electra - INFO - Number of attention layers must match number of hidden layers. 
+Number of attention layers: 12. Number of specified layers: 6
+Do you want me to construct the missing layers? [y/n]
+2024-01-17 19:26:22,390 - src.model.modelling_electra - INFO - Constructing missing layers...
+2024-01-17 19:26:23,701 - src.data.preprocessing - INFO - Dataset preprocessing started
+2024-01-17 19:26:23,701 - src.data.preprocessing - INFO - Load a cached dataset from ../data/data/JanosAudran/financial-reports-sec-None.cache
+2024-01-17 19:26:23,703 - fsspec.local - DEBUG - open file: /home/lubi/Documents/Projects/BA/src/model/../data/data/JanosAudran/financial-reports-sec-None.cache/dataset_dict.json
+2024-01-17 19:26:27,401 - src.data.preprocessing - INFO - Load completed
+2024-01-17 19:26:27,402 - src.data.preprocessing - INFO - Dataset preprocessing completed
+2024-01-17 19:26:47,409 - src.data.preprocessing - INFO - Training size: 33658063
+2024-01-17 19:26:47,410 - src.data.preprocessing - INFO - Valid size: 100
+2024-01-17 19:26:48,326 - __main__ - INFO - ***** Running training *****
+2024-01-17 19:26:48,326 - __main__ - INFO -   Num examples = 33658063
+2024-01-17 19:26:48,327 - __main__ - INFO -   Num Epochs = 8
+2024-01-17 19:26:48,327 - __main__ - INFO -   Instantaneous batch size per device = 64
+2024-01-17 19:26:48,327 - __main__ - INFO -   Total train batch size (w. parallel, distributed & accumulation) = (256.0, 1)
+2024-01-17 19:26:48,328 - __main__ - INFO -   Gradient Accumulation steps = 4
+2024-01-17 19:26:49,226 - __main__ - INFO -   Total optimization steps = 1000000
+2024-01-17 19:53:19,455 - src.model.modelling_electra - INFO - Number of attention layers must match number of hidden layers. 
+Number of attention layers: 12. Number of specified layers: 6
+Do you want me to construct the missing layers? [y/n]
+2024-01-17 19:53:37,272 - src.model.modelling_electra - INFO - Constructing missing layers...
+2024-01-17 19:53:38,986 - src.data.preprocessing - INFO - Dataset preprocessing started
+2024-01-17 19:53:38,987 - src.data.preprocessing - INFO - Load a cached dataset from ../data/data/JanosAudran/financial-reports-sec-None.cache
+2024-01-17 19:53:38,988 - fsspec.local - DEBUG - open file: /home/lubi/Documents/Projects/BA/src/model/../data/data/JanosAudran/financial-reports-sec-None.cache/dataset_dict.json
+2024-01-17 19:53:42,904 - src.data.preprocessing - INFO - Load completed
+2024-01-17 19:53:42,904 - src.data.preprocessing - INFO - Dataset preprocessing completed
+2024-01-17 19:54:04,029 - src.data.preprocessing - INFO - Training size: 33658063
+2024-01-17 19:54:04,029 - src.data.preprocessing - INFO - Valid size: 100
+2024-01-17 19:54:04,936 - __main__ - INFO - ***** Running training *****
+2024-01-17 19:54:04,936 - __main__ - INFO -   Num examples = 33658063
+2024-01-17 19:54:04,937 - __main__ - INFO -   Num Epochs = 8
+2024-01-17 19:54:04,937 - __main__ - INFO -   Instantaneous batch size per device = 64
+2024-01-17 19:54:04,937 - __main__ - INFO -   Total train batch size (w. parallel, distributed & accumulation) = (256.0, 1)
+2024-01-17 19:54:04,937 - __main__ - INFO -   Gradient Accumulation steps = 4
+2024-01-17 19:54:05,823 - __main__ - INFO -   Total optimization steps = 1000000
+2024-01-17 19:57:45,951 - src.model.modelling_electra - INFO - Number of attention layers must match number of hidden layers. 
+Number of attention layers: 12. Number of specified layers: 6
+Do you want me to construct the missing layers? [y/n]
+2024-01-17 19:58:05,953 - src.model.modelling_electra - INFO - Constructing missing layers...
+2024-01-17 19:58:07,341 - src.data.preprocessing - INFO - Dataset preprocessing started
+2024-01-17 19:58:07,342 - src.data.preprocessing - INFO - Load a cached dataset from ../data/data/JanosAudran/financial-reports-sec-None.cache
+2024-01-17 19:58:07,343 - fsspec.local - DEBUG - open file: /home/lubi/Documents/Projects/BA/src/model/../data/data/JanosAudran/financial-reports-sec-None.cache/dataset_dict.json
+2024-01-17 19:58:11,073 - src.data.preprocessing - INFO - Load completed
+2024-01-17 19:58:11,073 - src.data.preprocessing - INFO - Dataset preprocessing completed
+2024-01-17 19:58:32,086 - src.data.preprocessing - INFO - Training size: 33658063
+2024-01-17 19:58:32,087 - src.data.preprocessing - INFO - Valid size: 100
+2024-01-17 19:58:33,008 - __main__ - INFO - ***** Running training *****
+2024-01-17 19:58:33,008 - __main__ - INFO -   Num examples = 33658063
+2024-01-17 19:58:33,008 - __main__ - INFO -   Num Epochs = 8
+2024-01-17 19:58:33,009 - __main__ - INFO -   Instantaneous batch size per device = 64
+2024-01-17 19:58:33,009 - __main__ - INFO -   Total train batch size (w. parallel, distributed & accumulation) = (256.0, 1)
+2024-01-17 19:58:33,009 - __main__ - INFO -   Gradient Accumulation steps = 4
+2024-01-17 19:58:33,954 - __main__ - INFO -   Total optimization steps = 1000000
+2024-01-17 19:58:48,417 - __main__ - INFO - {'loss': 0.011270624160766601, 'learning_rate': 0.0, 'epoch': 0, 'step': 0}
+2024-01-17 19:58:48,589 - __main__ - INFO - ***** Running Evaluation *****
+2024-01-17 19:58:48,590 - __main__ - INFO -   Num examples = 100
+2024-01-17 19:58:48,590 - __main__ - INFO -   Batch size = 1
+2024-01-17 19:58:59,219 - __main__ - INFO - {'eval_loss': 45.08647918701172, 'eval_runtime': 10.794, 'eval_samples_per_second': 9.264, 'eval_steps_per_second': 9.264, 'epoch': 0, 'step': 0}
+2024-01-17 19:58:59,223 - __main__ - INFO - {'eval_loss': 45.08647918701172, 'eval_runtime': 10.794, 'eval_samples_per_second': 9.264, 'eval_steps_per_second': 9.264, 'epoch': 0, 'step': 0}
+2024-01-17 19:58:59,690 - __main__ - INFO - {'loss': 0.011281866073608399, 'learning_rate': 0.0, 'epoch': 0, 'step': 0}
+2024-01-17 19:58:59,694 - __main__ - INFO - ***** Running Evaluation *****
+2024-01-17 19:58:59,695 - __main__ - INFO -   Num examples = 100
+2024-01-17 19:58:59,695 - __main__ - INFO -   Batch size = 1
+2024-01-17 19:59:09,398 - __main__ - INFO - {'eval_loss': 45.113189697265625, 'eval_runtime': 9.7039, 'eval_samples_per_second': 10.305, 'eval_steps_per_second': 10.305, 'epoch': 0, 'step': 0}
+2024-01-17 19:59:09,404 - __main__ - INFO - {'eval_loss': 45.113189697265625, 'eval_runtime': 9.7039, 'eval_samples_per_second': 10.305, 'eval_steps_per_second': 10.305, 'epoch': 0, 'step': 0}
+2024-01-17 20:03:18,295 - __main__ - INFO - {'loss': 0.011272377014160156, 'learning_rate': 0.0, 'epoch': 0, 'step': 0}
+2024-01-17 20:04:30,104 - src.model.modelling_electra - INFO - Number of attention layers must match number of hidden layers. 
+Number of attention layers: 12. Number of specified layers: 6
+Do you want me to construct the missing layers? [y/n]
+2024-01-17 20:04:50,106 - src.model.modelling_electra - INFO - Constructing missing layers...
+2024-01-17 20:04:51,447 - src.data.preprocessing - INFO - Dataset preprocessing started
+2024-01-17 20:04:51,447 - src.data.preprocessing - INFO - Load a cached dataset from ../data/data/JanosAudran/financial-reports-sec-None.cache
+2024-01-17 20:04:51,449 - fsspec.local - DEBUG - open file: /home/lubi/Documents/Projects/BA/src/model/../data/data/JanosAudran/financial-reports-sec-None.cache/dataset_dict.json
+2024-01-17 20:04:55,183 - src.data.preprocessing - INFO - Load completed
+2024-01-17 20:04:55,184 - src.data.preprocessing - INFO - Dataset preprocessing completed
+2024-01-17 20:05:15,894 - src.data.preprocessing - INFO - Training size: 33658063
+2024-01-17 20:05:15,895 - src.data.preprocessing - INFO - Valid size: 100
+2024-01-17 20:05:17,395 - __main__ - INFO - ***** Running training *****
+2024-01-17 20:05:17,396 - __main__ - INFO -   Num examples = 33658063
+2024-01-17 20:05:17,397 - __main__ - INFO -   Num Epochs = 8
+2024-01-17 20:05:17,398 - __main__ - INFO -   Instantaneous batch size per device = 64
+2024-01-17 20:05:17,398 - __main__ - INFO -   Total train batch size (w. parallel, distributed & accumulation) = (256.0, 1)
+2024-01-17 20:05:17,398 - __main__ - INFO -   Gradient Accumulation steps = 4
+2024-01-17 20:05:18,608 - __main__ - INFO -   Total optimization steps = 1000000
+2024-01-17 20:06:05,921 - __main__ - INFO - {'loss': 0.011274282455444335, 'learning_rate': 0.0, 'epoch': 0, 'step': 0}
+2024-01-17 20:06:44,082 - __main__ - INFO - ***** Running Evaluation *****
+2024-01-17 20:06:44,083 - __main__ - INFO -   Num examples = 100
+2024-01-17 20:06:44,083 - __main__ - INFO -   Batch size = 1
+2024-01-17 20:07:05,281 - __main__ - INFO - {'eval_loss': 45.10558319091797, 'eval_runtime': 20.5783, 'eval_samples_per_second': 4.859, 'eval_steps_per_second': 4.859, 'epoch': 0, 'step': 0}
+2024-01-17 20:07:08,223 - __main__ - INFO - {'eval_loss': 45.10558319091797, 'eval_runtime': 20.5783, 'eval_samples_per_second': 4.859, 'eval_steps_per_second': 4.859, 'epoch': 0, 'step': 0}
+2024-01-17 20:09:07,253 - src.model.modelling_electra - INFO - Number of attention layers must match number of hidden layers. 
+Number of attention layers: 12. Number of specified layers: 6
+Do you want me to construct the missing layers? [y/n]
+2024-01-17 20:09:27,254 - src.model.modelling_electra - INFO - Constructing missing layers...
+2024-01-17 20:09:28,852 - src.data.preprocessing - INFO - Dataset preprocessing started
+2024-01-17 20:09:28,852 - src.data.preprocessing - INFO - Load a cached dataset from ../data/data/JanosAudran/financial-reports-sec-None.cache
+2024-01-17 20:09:28,854 - fsspec.local - DEBUG - open file: /home/lubi/Documents/Projects/BA/src/model/../data/data/JanosAudran/financial-reports-sec-None.cache/dataset_dict.json
+2024-01-17 20:09:33,806 - src.data.preprocessing - INFO - Load completed
+2024-01-17 20:09:33,807 - src.data.preprocessing - INFO - Dataset preprocessing completed
+2024-01-17 20:09:54,742 - src.data.preprocessing - INFO - Training size: 33658063
+2024-01-17 20:09:54,742 - src.data.preprocessing - INFO - Valid size: 100
+2024-01-17 20:09:55,640 - __main__ - INFO - ***** Running training *****
+2024-01-17 20:09:55,640 - __main__ - INFO -   Num examples = 33658063
+2024-01-17 20:09:55,640 - __main__ - INFO -   Num Epochs = 8
+2024-01-17 20:09:55,641 - __main__ - INFO -   Instantaneous batch size per device = 64
+2024-01-17 20:09:55,641 - __main__ - INFO -   Total train batch size (w. parallel, distributed & accumulation) = (256.0, 1)
+2024-01-17 20:09:55,641 - __main__ - INFO -   Gradient Accumulation steps = 4
+2024-01-17 20:09:56,539 - __main__ - INFO -   Total optimization steps = 1000000
+2024-01-17 20:42:45,255 - __main__ - INFO - {'loss': 29.688087890625, 'learning_rate': 5e-05, 'epoch': 0.01, 'step': 1000}
+2024-01-17 20:42:45,419 - __main__ - INFO - ***** Running Evaluation *****
+2024-01-17 20:42:45,420 - __main__ - INFO -   Num examples = 100
+2024-01-17 20:42:45,420 - __main__ - INFO -   Batch size = 1
+2024-01-17 20:42:53,792 - __main__ - INFO - {'eval_loss': 28.732437133789062, 'eval_runtime': 8.5288, 'eval_samples_per_second': 11.725, 'eval_steps_per_second': 11.725, 'epoch': 0.01, 'step': 1000}
+2024-01-17 20:42:53,796 - __main__ - INFO - {'eval_loss': 28.732437133789062, 'eval_runtime': 8.5288, 'eval_samples_per_second': 11.725, 'eval_steps_per_second': 11.725, 'epoch': 0.01, 'step': 1000}
+2024-01-17 20:50:02,074 - src.model.modelling_electra - INFO - Number of attention layers must match number of hidden layers. 
+Number of attention layers: 12. Number of specified layers: 6
+Do you want me to construct the missing layers? [y/n]
+2024-01-17 20:50:22,076 - src.model.modelling_electra - INFO - Constructing missing layers...
+2024-01-17 20:50:23,323 - src.data.preprocessing - INFO - Dataset preprocessing started
+2024-01-17 20:50:23,323 - src.data.preprocessing - INFO - Load a cached dataset from ../data/data/JanosAudran/financial-reports-sec-None.cache
+2024-01-17 20:50:23,325 - fsspec.local - DEBUG - open file: /home/lubi/Documents/Projects/BA/src/model/../data/data/JanosAudran/financial-reports-sec-None.cache/dataset_dict.json
+2024-01-17 20:50:27,022 - src.data.preprocessing - INFO - Load completed
+2024-01-17 20:50:27,023 - src.data.preprocessing - INFO - Dataset preprocessing completed
+2024-01-17 20:50:47,869 - src.data.preprocessing - INFO - Training size: 33658063
+2024-01-17 20:50:47,869 - src.data.preprocessing - INFO - Valid size: 100
+2024-01-17 20:50:48,736 - __main__ - INFO - ***** Running training *****
+2024-01-17 20:50:48,736 - __main__ - INFO -   Num examples = 33658063
+2024-01-17 20:50:48,737 - __main__ - INFO -   Num Epochs = 8
+2024-01-17 20:50:48,737 - __main__ - INFO -   Instantaneous batch size per device = 64
+2024-01-17 20:50:48,737 - __main__ - INFO -   Total train batch size (w. parallel, distributed & accumulation) = (256.0, 1)
+2024-01-17 20:50:48,738 - __main__ - INFO -   Gradient Accumulation steps = 4
+2024-01-17 20:50:49,628 - __main__ - INFO -   Total optimization steps = 1000000
+2024-01-17 20:53:21,308 - src.model.modelling_electra - INFO - Number of attention layers must match number of hidden layers. 
+Number of attention layers: 12. Number of specified layers: 6
+Do you want me to construct the missing layers? [y/n]
+2024-01-17 20:53:41,310 - src.model.modelling_electra - INFO - Constructing missing layers...
+2024-01-17 20:53:42,578 - src.data.preprocessing - INFO - Dataset preprocessing started
+2024-01-17 20:53:42,578 - src.data.preprocessing - INFO - Load a cached dataset from ../data/data/JanosAudran/financial-reports-sec-None.cache
+2024-01-17 20:53:42,580 - fsspec.local - DEBUG - open file: /home/lubi/Documents/Projects/BA/src/model/../data/data/JanosAudran/financial-reports-sec-None.cache/dataset_dict.json
+2024-01-17 20:53:46,619 - src.data.preprocessing - INFO - Load completed
+2024-01-17 20:53:46,619 - src.data.preprocessing - INFO - Dataset preprocessing completed
+2024-01-17 20:54:15,235 - src.data.preprocessing - INFO - Training size: 33658063
+2024-01-17 20:54:15,235 - src.data.preprocessing - INFO - Valid size: 100
+2024-01-17 20:54:16,227 - __main__ - INFO - ***** Running training *****
+2024-01-17 20:54:16,228 - __main__ - INFO -   Num examples = 33658063
+2024-01-17 20:54:16,228 - __main__ - INFO -   Num Epochs = 8
+2024-01-17 20:54:16,229 - __main__ - INFO -   Instantaneous batch size per device = 64
+2024-01-17 20:54:16,229 - __main__ - INFO -   Total train batch size (w. parallel, distributed & accumulation) = (256.0, 1)
+2024-01-17 20:54:16,229 - __main__ - INFO -   Gradient Accumulation steps = 4
+2024-01-17 20:54:17,119 - __main__ - INFO -   Total optimization steps = 1000000

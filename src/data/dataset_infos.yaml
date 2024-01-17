@@ -1,0 +1,65 @@
+- name: "JanosAudran/financial-reports-sec"
+  subset: null
+  num_clf_classes: 0
+  num_regr: 0
+  text_columns:
+      - "sentence"
+  sentence_segmentation: False
+  validation_set_names: ["validation"]
+  test_set_names: ["test"]
+  save_local_path: "/home/lubi/Documents/Data/fin_reports"
+
+- name: "wikipedia_chunked"
+  subset: null
+  num_clf_classes: 0
+  num_regr: 0
+  text_columns:
+    - "text"
+  sentence_segmentation: False
+  validation_set_names: []
+  test_set_names: []
+  save_local_path: "/home/lubi/Documents/Data/wikipedia_dumps_chunked"
+
+- name: "bookcorpus"
+  subset: null
+  num_clf_classes: 0
+  num_regr: 0
+  text_columns:
+    - "text"
+  sentence_segmentation: False
+  validation_set_names: []
+  test_set_names: []
+
+- name: "openwebtext"
+  subset: null
+  num_clf_classes: 0
+  num_regr: 0
+  text_columns:
+      - "text"
+  sentence_segmentation: False
+  validation_set_names: []
+  test_set_names: []
+
+- name: "imdb"
+  subset: null
+  num_clf_classes: 2
+  num_regr: 0
+  text_columns:
+      - "text"
+  sentence_segmentation: True
+  validation_set_names:
+      - "test"
+  test_set_names: []
+
+- name: "wikipedia"
+  subset: null
+  num_clf_classes: 0
+  num_regr: 0
+  text_columns:
+      - "text"
+  sentence_segmentation: True
+  validation_set_names: []
+  test_set_names: []
+  save_local_path: "/home/lubi/Documents/Data/wikipedia_dumps"
+
+

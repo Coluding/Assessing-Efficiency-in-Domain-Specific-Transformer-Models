@@ -1,6 +1,28 @@
 import time
 import functools
 import yaml
+import threading
+import sys
+
+
+def input_with_timeout(prompt, timeout, logging):
+    logging.info(prompt)
+    result = [None]
+
+    def set_user_input():
+        try:
+            result[0] = input()
+        except EOFError:
+            pass
+
+    input_thread = threading.Thread(target=set_user_input)
+    input_thread.daemon = True
+    input_thread.start()
+    input_thread.join(timeout)
+
+    return result[0]
+
+
 
 def timing_decorator(active=True):
     def decorator(func):

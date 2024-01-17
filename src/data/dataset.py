@@ -7,7 +7,8 @@ import yaml
 import logging
 import numpy as np
 from typing import List, Dict
-
+import datasets
+from abc import ABC, abstractmethod
 import sys
 
 sys.path.insert(0, "../../")
@@ -20,6 +21,110 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(levelname)s - %(message)s',
                     filename='app.log',
                     filemode='w')
+
+
+class AbstractMaskBaseDataset(Dataset, ABC):
+    def __init__(self):
+        raise NotImplementedError("This is an abstract class. Please use a subclass.")
+
+
+class WikiDataset(Dataset):
+    @exception_decorator(exception_type=KeyError, message="Check if all fields are listed in the config file.")
+    def __init__(self, config_file_path: str):
+        with open(config_file_path, "r") as file:
+            self.config = yaml.safe_load(file)
+
+        self.logger = logging
+
+        if self.config["wiki"]["use_saved"]:
+            self.data = datasets.load_from_disk(self.config["wiki"]["path"])
+
+        else:
+            self.data = datasets.load_dataset("wikipedia/wikipedia", "20200501.en")
+
+        if self.config["large_memory"]:
+            if self.config["wiki"]["use_chunked"]:
+                self.data: List[str] = self._read_wiki_data("chunk")
+            else:
+                self.data: List[str] = self._read_wiki_data("key")
+
+        if self.config["use_local_tokenizer"]:
+            raise NotImplementedError("implement local tokenizer")
+        else:
+            self.tokenizer = transformers.AutoTokenizer.from_pretrained(self.config["tokenizer"])
+
+        self.masked_probability = self.config["masked_probability"]
+        self.preprocessor = Preprocessing(config_file_path)
+        self.preprocessor.set_tokenizer(self.tokenizer)
+        self.mask_token_id = self.tokenizer.mask_token_id
+        self.dynamic_masking = self.config["dynamic_masking"]
+        self.pad_token_id = self.tokenizer.pad_token_id
+        self.token_to_vocab: Dict[str, int] = None
+
+        self.create_token_to_vocab()
+        self.non_maskable_tokens = list(range(self.config["number_of_ignorable_tokens_for_masking"]))
+        self.non_maskable_tokens.extend([self.tokenizer.get_vocab()[","], self.tokenizer.get_vocab()["."],
+                                         self.tokenizer.get_vocab()["'"], self.tokenizer.get_vocab()["!"],
+                                         self.tokenizer.get_vocab()["?"], self.tokenizer.get_vocab()[":"],
+                                         self.tokenizer.get_vocab()["("], self.tokenizer.get_vocab()[")"],
+                                         self.tokenizer.get_vocab()["-"], self.tokenizer.get_vocab()["$"]
+                                         ])
+
+        self.seeds = [i for i in range(self.__len__())]
+
+    def __len__(self):
+        return len(self.data)
+
+    def _read_wiki_data(self, key: str = "train"):
+        return [x[key] for x in self.data[key]]
+
+    def create_token_to_vocab(self):
+        self.token_to_vocab = {v: k for k, v in self.tokenizer.get_vocab().items()}
+
+    def map_token_sequence_to_vocab(self, tokens: torch.Tensor):
+        """
+        Maps a sequence of tokens to the vocabulary.
+        :param tokens: Sequence of tokens.
+        :return: Sequence of tokens mapped to the vocabulary.
+        """
+        if self.token_to_vocab is None:
+            self.create_token_to_vocab()
+        return [self.token_to_vocab[token.item()] if not isinstance(tokens, list) else self.token_to_vocab[token]
+                for token in tokens]
+
+    def mask_sequence(self, sequence: torch.Tensor, seed: int = None):
+        """
+        Masks a sequence with a given probability while preserving padding structure.
+        :param sequence: Sequence to be masked.
+        :param seed: Seed for the random number generator.
+        :return: Masked sequence.
+        """
+
+        # TODO: Inject domain words
+        possible_masked_indices = torch.nonzero(torch.isin(sequence, torch.tensor(self.non_maskable_tokens)).bitwise_not().long())
+        if not self.dynamic_masking:
+            np.random.seed(seed)
+
+        random_indices = np.random.choice(possible_masked_indices.squeeze(),
+                                          int(len(possible_masked_indices) * self.masked_probability),
+                                          replace=False)
+
+        labels = sequence[random_indices]
+        sequence[random_indices] = self.mask_token_id
+        return sequence, labels
+
+    def __getitem__(self, index):
+
+        sample = self.data[index]
+        tokenized_sample: torch.Tensor = self.preprocessor.tokenize_and_pad_max_length(sample)[0]
+
+        tokenized_sample_to_mask = tokenized_sample.clone()
+        if self.dynamic_masking:
+            sequence, labels = self.mask_sequence(tokenized_sample_to_mask)
+        else:
+            sequence, labels = self.mask_sequence(tokenized_sample_to_mask, self.seeds[index])
+
+        return sequence, tokenized_sample
 
 
 class FinDataset(Dataset):
@@ -66,9 +171,10 @@ class FinDataset(Dataset):
         self.create_token_to_vocab()
         self.non_maskable_tokens = list(range(self.config["number_of_ignorable_tokens_for_masking"]))
         self.non_maskable_tokens.extend([self.tokenizer.get_vocab()[","], self.tokenizer.get_vocab()["."],
-                                         self.tokenizer.get_vocab()["'"],self.tokenizer.get_vocab()["!"],
-                                         self.tokenizer.get_vocab()["?"],  self.tokenizer.get_vocab()[":"],
-                                         self.tokenizer.get_vocab()["("],  self.tokenizer.get_vocab()[")"]
+                                         self.tokenizer.get_vocab()["'"], self.tokenizer.get_vocab()["!"],
+                                         self.tokenizer.get_vocab()["?"], self.tokenizer.get_vocab()[":"],
+                                         self.tokenizer.get_vocab()["("], self.tokenizer.get_vocab()[")"],
+                                         self.tokenizer.get_vocab()["-"], self.tokenizer.get_vocab()["$"]
                                          ])
 
         self.seeds = [i for i in range(self.__len__())]
@@ -140,10 +246,10 @@ class FinDataset(Dataset):
         """
 
         # TODO: Inject domain words
-
         possible_masked_indices = torch.nonzero(torch.isin(sequence, torch.tensor(self.non_maskable_tokens)).bitwise_not().long())
         if not self.dynamic_masking:
             np.random.seed(seed)
+
         random_indices = np.random.choice(possible_masked_indices.squeeze(),
                                           int(len(possible_masked_indices) * self.masked_probability),
                                           replace=False)
@@ -192,8 +298,9 @@ class FinDataset(Dataset):
         return sequence, tokenized_report
 
 
+
 def main():
-    dataset = FinDataset("../config.yml")
+    dataset = WikiDataset("../config.yml")
     #    dataset.mask_sequence(dataset[0])
     print(dataset[0][0].shape)
 

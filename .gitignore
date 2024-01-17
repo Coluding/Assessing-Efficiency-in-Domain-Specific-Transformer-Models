@@ -7,3 +7,10 @@
 ./src/utils/__pycache__
 ./src/model/app.log
 ./src/model/logging
+./src/external
+./src/model/data/checkpoints/
+./src/model/data/logging/
+./src/model/checkpoints/
+./src/model/tensorboard/
+.src/data/data/
+.src/external/finroberta/
