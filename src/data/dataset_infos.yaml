@@ -1,4 +1,15 @@
 - name: "JanosAudran/financial-reports-sec"
+  subset: "large_lite"
+  num_clf_classes: 0
+  num_regr: 0
+  text_columns:
+      - "sentence"
+  sentence_segmentation: False
+  validation_set_names: ["validation"]
+  test_set_names: ["test"]
+  save_local_path: "/home/lubi/Documents/Data/fin_reports"
+
+- name: "JanosAudran/financial-reports-sec"
   subset: null
   num_clf_classes: 0
   num_regr: 0

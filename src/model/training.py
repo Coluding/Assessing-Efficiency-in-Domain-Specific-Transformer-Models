@@ -41,6 +41,9 @@ from transformers.trainer import Trainer, is_torch_tpu_available
 from transformers.trainer_pt_utils import reissue_pt_warnings
 from transformers.trainer_utils import PredictionOutput, TrainOutput
 
+import sys
+sys.path.insert(0, "../../")
+
 from src.data.preprocessing import HFDatasetUtils
 from src.data.utils import get_dataset_info
 from src.data.collator import DataCollatorForDocumentElectra
@@ -326,7 +329,7 @@ def train_model_pretraining(
         save_steps=int(save_steps / effective_train_batch_size),
         save_total_limit=200,
         learning_rate=lr,
-        fp16=True,
+        fp16=False,
         max_grad_norm=max_grad_norm,
         gradient_accumulation_steps=gradient_accumulation_steps,
         logging_dir=get_tensorboard_experiment_id(experiment_name=experiment_name,
@@ -477,6 +480,9 @@ class MyTrainer(Trainer):
                 output: DocumentElectraPretrainingModelOutput = self.compute_loss(model, inputs)
         else:
             output: DocumentElectraPretrainingModelOutput = self.compute_loss(model, inputs)
+
+        if torch.any(torch.isnan(output.loss)) or torch.any(torch.isinf(output.loss)):
+            return output
 
         if self.args.gradient_accumulation_steps > 1:
             output.loss /= (self.args.gradient_accumulation_steps * self.args.n_gpu)
@@ -804,6 +810,10 @@ class MyTrainer(Trainer):
                 else:
                     output = self.training_step(model, inputs)
 
+                if torch.any(torch.isnan(output.loss)) or torch.any(torch.isinf(output.loss)):
+                    logger.warning(f"NaN detected in loss in {self.state.global_step}. Skipping this batch")
+                    continue
+
                 tr_loss += output.loss
                 tr_generator_loss += output.generator_loss
                 tr_discriminant_loss += output.discriminant_loss
@@ -1119,7 +1129,6 @@ class MyTrainer(Trainer):
             if (
                 args.eval_accumulation_steps is not None
                 and (step + 1) % args.eval_accumulation_steps == 0
-                and (self.accelerator.sync_gradients or version.parse(accelerate_version) > version.parse("0.20.3"))
             ):
                 if losses_host is not None:
                     losses = nested_numpify(losses_host)
