@@ -30,7 +30,6 @@ from transformers.trainer import (
     IterableDatasetShard,
     nested_numpify,
     nested_concat,
-    accelerate_version,
     DebugOption,
     speed_metrics,
 
