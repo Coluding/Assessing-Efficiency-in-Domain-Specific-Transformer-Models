@@ -30,6 +30,7 @@ from transformers.trainer import (
     IterableDatasetShard,
     nested_numpify,
     nested_concat,
+    accelerate_version,
     DebugOption,
     speed_metrics,
 
@@ -328,7 +329,7 @@ def train_model_pretraining(
         save_steps=int(save_steps / effective_train_batch_size),
         save_total_limit=200,
         learning_rate=lr,
-        fp16=False,
+        fp16=True,
         max_grad_norm=max_grad_norm,
         gradient_accumulation_steps=gradient_accumulation_steps,
         logging_dir=get_tensorboard_experiment_id(experiment_name=experiment_name,
@@ -852,6 +853,7 @@ class MyTrainer(Trainer):
 
 
                     if self.state.global_step % self.args.logging_steps == 0:
+                        logger.info(f"***** Logging step *****")
                         self.control.should_log = True
                         if self.state.global_step > 0:
                             self.control.should_save = True

@@ -84,7 +84,8 @@ class DocumentElectraConfig(PretrainedConfig):
                  class_output_shape: int = None, regr_output_shape: int = None,
                  fcn_dropout: float = 0.1, chunk_length: int = 128, layer_depth_offset: int = -1,
                  initializer_range: float = 0.02,
-                 sequence_embeddings: bool = False, relative_position_embeddings: bool = True):
+                 sequence_embeddings: bool = False, relative_position_embeddings: bool = True,
+                 **kwargs):
         super().__init__()
         self.sequence_embeddings = sequence_embeddings
         self.relative_position_embeddings = relative_position_embeddings

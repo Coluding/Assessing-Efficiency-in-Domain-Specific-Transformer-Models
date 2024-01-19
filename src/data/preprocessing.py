@@ -83,7 +83,7 @@ class HFDatasetUtils:
                 logger.info(f"Load completed")
 
             else:
-                if d_info.save_local_path is  None:
+                if d_info.save_local_path is None:
                     logger.info(f"Load unprocessed dataset from {d_info.name} using local path {d_info.save_local_path}")
                     datasets: DatasetDict = load_from_disk(d_info.save_local_path)
                     logger.info(f"Load unprocessed dataset from disk completed")
@@ -737,7 +737,7 @@ def main():
     #dataset_name = dataset_name.split("-")
     #dataset_name, dataset_subset = (dataset_name[0], dataset_name[1] if len(dataset_name) > 1 else None)
 
-    dataset_infos = [get_dataset_info(dataset_name=dataset_name, dataset_subset="large-lite")]
+    dataset_infos = [get_dataset_info(dataset_name=dataset_name, dataset_subset="large_lite")]
     config = DocumentElectraConfig(
         vocab_size=30522,
         embedding_size=512,

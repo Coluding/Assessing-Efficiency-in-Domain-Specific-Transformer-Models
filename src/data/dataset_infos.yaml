@@ -7,7 +7,7 @@
   sentence_segmentation: False
   validation_set_names: ["validation"]
   test_set_names: ["test"]
-  save_local_path: "/home/lubi/Documents/Data/fin_reports"
+  save_local_path:
 
 - name: "JanosAudran/financial-reports-sec"
   subset: null
