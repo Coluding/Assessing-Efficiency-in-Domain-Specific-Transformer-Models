@@ -83,7 +83,7 @@ class HFDatasetUtils:
                 logger.info(f"Load completed")
 
             else:
-                if d_info.save_local_path is None:
+                if d_info.save_local_path is not None:
                     logger.info(f"Load unprocessed dataset from {d_info.name} using local path {d_info.save_local_path}")
                     datasets: DatasetDict = load_from_disk(d_info.save_local_path)
                     logger.info(f"Load unprocessed dataset from disk completed")

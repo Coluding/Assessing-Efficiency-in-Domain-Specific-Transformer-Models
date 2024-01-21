@@ -32,8 +32,7 @@ from transformers.trainer import (
     nested_concat,
     accelerate_version,
     DebugOption,
-    speed_metrics,
-
+    speed_metrics, TRAINER_STATE_NAME,
 
 )
 
@@ -1292,13 +1291,6 @@ class MyTrainer(Trainer):
             )
         )
 
-
-
-
-        if DebugOption.TPU_METRICS_DEBUG in self.args.debug:
-            # tpu-comment: Logging debug metrics for PyTorch/XLA (compile, execute times, ops, etc.)
-            xm.master_print(met.metrics_report())
-
         self.control = self.callback_handler.on_evaluate(self.args, self.state, self.control, output.metrics)
 
         self._memory_tracker.stop_and_update_metrics(output.metrics)
@@ -1311,6 +1303,26 @@ class MyTrainer(Trainer):
 
         self.log_with_file(output.metrics, logger)
         return output.metrics
+
+    def save_model(self, output_dir: Optional[str] = None, _internal_call: bool = False):
+        """
+        Will save the model, so you can reload it using `from_pretrained()`.
+
+        Will only save from the main process.
+        """
+
+        if output_dir is None:
+            output_dir = self.args.output_dir
+
+        if self.args.should_save:
+            state_dict = self.model.state_dict()
+            torch.save(state_dict, os.path.join(output_dir, "pytorch_model.bin"))
+            self._save(output_dir)
+
+        # Push to the Hub when `save_model` is called by the user.
+        if self.args.push_to_hub and not _internal_call:
+            self.push_to_hub(commit_message="Model save")
+
 
 
 if __name__ == "__main__":
