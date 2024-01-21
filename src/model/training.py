@@ -854,7 +854,7 @@ class MyTrainer(Trainer):
                     if self.state.global_step % self.args.logging_steps == 0:
                         logger.info(f"***** Logging step *****")
                         self.control.should_log = True
-                        if self.state.global_step > 0:
+                        if self.state.global_step % (self.args.logging_steps * 10) == 0and self.state.global_step > 0:
                             self.control.should_save = True
                         self.control.should_log = True
                         if self.state.global_step % self.args.logging_steps * 5 == 0:
