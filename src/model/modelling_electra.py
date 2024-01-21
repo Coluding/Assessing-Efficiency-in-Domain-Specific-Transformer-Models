@@ -234,21 +234,15 @@ class MyReformerConfig(DocumentElectraConfig):
         self.attn_layers = attn_layers
         if len(attn_layers) < num_hidden_layers:
             message = (f"Number of attention layers must match number of hidden layers. \n"
-                       f"Number of attention layers: {num_hidden_layers}. Number of specified layers: {len(attn_layers)}\n"
-                       f"Do you want me to construct the missing layers? [y/n]")
-            user_input = input_with_timeout(message, 20, logger)
-            if user_input and user_input.lower() in ['no', 'n']:
-                raise ValueError("Cannot continue without correct number of attention layers.")
-
-            else:
-                logger.info("Constructing missing layers...")
-                num_missing_layers = num_hidden_layers - len(attn_layers)
-                last_layer = attn_layers[-1]
-                self.attn_layers = list(attn_layers)
-                for _ in range(num_missing_layers):
-                    last_layer = "lsh" if last_layer == "local" else "local"
-                    self.attn_layers.append(last_layer)
-
+                       f"Number of attention layers: {num_hidden_layers}. Number of specified layers: {len(attn_layers)}\n")
+            logger.info(message)
+            logger.info("Constructing missing layers...")
+            num_missing_layers = num_hidden_layers - len(attn_layers)
+            last_layer = attn_layers[-1]
+            self.attn_layers = list(attn_layers)
+            for _ in range(num_missing_layers):
+                last_layer = "lsh" if last_layer == "local" else "local"
+                self.attn_layers.append(last_layer)
 
         elif len(attn_layers) > num_hidden_layers:
             logger.warning("Number of attention layers exceeds number of hidden layers. "
