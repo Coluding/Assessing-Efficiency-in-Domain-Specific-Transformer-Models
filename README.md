@@ -1,4 +1,4 @@
-## Bachelor thesis Lukas Bierling: ReversibleDilatedFinBERT
+## Bachelor thesis Lukas Bierling: Assessing Efficiency in Domain-Specific Transformer Models: Comparing, Pretraining, and Finetuning Small-Scale Transformer Models within Hardware Limitations for Financial NLP
 
 ### Abstract
 This thesis embarks on a critical examination of transformer-based models optimized for the financial sector under computational constraints. The study systematically explores the adaptability and performance of various transformer architectures, including BERT, Reformer, and a custom-designed reversible dilated BERT, in handling domain-specific financial texts. A significant portion of this research is dedicated to the process of pretraining these models on specialized datasets to ascertain their effectiveness in financial sentiment analysis and topic classification tasks.
@@ -10,16 +10,6 @@ Conversely, the Electra pretraining method, applied to the BERT model, demonstra
 Through a detailed analysis and comparison of transformer model architectures and their pretraining and finetuning performance, this thesis contributes valuable insights into the development of efficient NLP solutions tailored to the financial industry. It highlights the critical balance between model complexity, computational resource availability, and the specific requirements of financial NLP tasks, offering guidance for future research in this vital intersection of technology and finance.
 
 
-
-### 1. Introduction
-This repository contains the code for a reversible dilated BERT like model to understand financial text data.
-Reversible blocks allow for huge memory savings. In combination with a dilated attention mechanism, the final model should be able to handle large sequences without causing GPU memory issues.
+### Repository
 
 
-### Shapes of dilated attention
-- Input of shape B,N,D
-- Rearrange to account for different heads: B,N,H, D//H
-- Rearrange to account for different segments/groups: B,S, N//S, H, D//H
-- For each segment compute multihead attention, such that each scaled dot product of segment has shape: B,N//S,H,N//S
-- Each segment has attention output of shape: B, N//S, H, D//H
-- Reshape all segements to B, S*N//S, H, D//H = B, N, H, D//H which is the normal attention output
